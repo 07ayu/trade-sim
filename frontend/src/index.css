@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@import "./Dashboard//dashboard-style.css";
+
+a {
+  font-weight: 500;
+  /* color: grey; */
+  text-decoration: none;
+}
+
+#supportHero {
+  background-color: rgb(56, 126, 209);
+  color: white;
+}
+
+#supportHero a {
+  color: white;
+}
+
+#supportHero input {
+  padding: 20px 50px;
+  width: 590px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+}
+
+#supportWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 150px;
+}
+
+/* dashboard fixed */
+
+/* Add to the bottom of your index.css */
+
+/* Dashboard layout fixes */
+/* .dashboard-container {
+  height: auto !important;
+  min-height: 500px;
+}
+
+.orders {
+  height: auto !important;
+  min-height: 500px;
+}
+
+.topbar-container {
+  height: auto !important;
+  min-height: 60px;
+}
+
+.watchlist-number {
+  position: relative !important;
+  bottom: auto !important;
+  height: auto !important;
+  min-height: 60px;
+} */
