@@ -33,38 +33,8 @@ export default function TradeSim() {
     }
   };
 
-  // const [state, setState] = useState(Signup)
 
-  //original
-  // const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   email: "",
-  //   password: "",
-  //   rememberMe: false,
-  // });
-
-  // const handleSubmit = () => {
-  //   console.log('Form submitted:', formData);
-  //   alert(isLogin ? 'Login successful!' : 'Account created!');
-  //   navigate("http://localhost:3000/");
-  // };
-
-  // const handleChange = (e) => {
-  //   const { name, value, type, checked } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: type === "checkbox" ? checked : value,
-  //   });
-  // };
-
-  // const handleKeyPress = (e) => {
-  //   if (e.key === "Enter") {
-  //     handleSubmit();
-  //   }
-  // };
 
   return (
     <div className=" bg-gray-50 py-12l">

@@ -1,10 +1,10 @@
 import React from "react";
-import TradingViewWidget from "./content/TradingViewWidget";
+import TradingViewWidget from "./components/TradingViewWidget";
 
 const Summary =  () => {
   return (
     <>
-      <TradingViewWidget />
+      {/* <TradingViewWidget /> */}
 
       <div className="username">
         <h6>Hi, User!</h6>

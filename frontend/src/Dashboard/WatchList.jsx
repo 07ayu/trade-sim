@@ -10,14 +10,14 @@ import {
 
 import GeneralContext from "./GeneralContext";
 
-import { watchlist } from "../../../dashboard/src/Data/data";
+import { watchlist } from "./data/data";
 
 import { DoughnutChart } from "./DoughnutChart";
-const labels = watchlist.map((subArray) => (subArray = ["name"]));
+// const labels = watchlist.map((subArray) => (subArray = ["name"]));
 
 const WatchList = () => {
   const data = {
-    labels,
+    labels: watchlist.map((stock) => stock.name),
     datasets: [
       {
         label: "Price",

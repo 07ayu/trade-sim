@@ -206,9 +206,6 @@ app.use("/", authRoute)
 
 app.get("/allHoldings", async (req, res) => {
     let allHoldings = await HoldingsModel.find({});
-
-    console.log("received")
-
     res.json(allHoldings);
 })
 

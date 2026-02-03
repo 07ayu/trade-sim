@@ -39,7 +39,7 @@ function App() {
         const res = await axios_api("/me");
 
         if (res.data.Authenticated) {
-          dispatch(setAuth(res.data.user));
+          dispatch(setAuth(res.data));
         }
       } catch (err) {
         console.log(err);

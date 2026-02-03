@@ -89,3 +89,12 @@ module.exports.me = async (req, res) => {
         res.json({ Authenticated: false })
     }
 }
+
+module.exports.logout = ("/logout", (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+    });
+
+    res.status(200).json({ message: "Logged Out" })
+})
