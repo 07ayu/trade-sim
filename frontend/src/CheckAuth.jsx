@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 // import { ToastContainer, toast } from "react-toastify";
-import 
+import { selectCurrentAuthenticated } from "./redux/slices/authReducer";
 import { useSelector } from "react-redux";
 
 const CheckAuth = () => {
