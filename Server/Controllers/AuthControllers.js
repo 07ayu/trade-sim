@@ -1,4 +1,4 @@
-const User = require("../schemas/UserSchema")
+const User = require("../model/UserModel")
 const { CreateSecretToken } = require("../utils/SecretToken")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");

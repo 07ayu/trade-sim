@@ -4,7 +4,7 @@ const router = require("express").Router();
 // const me = require("../Controllers/")
 
 
-router.post("/", userVerification)
+// router.post("/", userVerification)
 router.post("/signup", Signup);
 router.post("/login", Login)
 router.get("/me", me)

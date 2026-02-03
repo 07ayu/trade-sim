@@ -1,12 +1,12 @@
-const { Schema } = require("mongoose")
+const mongose = require("mongoose")
 
-const HoldingsSchema = new Schema({
+const HoldingsSchema = new mongose.Schema({
     name: String,
     qty: Number,
     avg: Number,
     price: Number,
     net: String,
-    day: String ,
+    day: String,
 })
 
-module.exports = { HoldingsSchema }
+export default mongose.model("holding", HoldingsSchema)

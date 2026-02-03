@@ -1,6 +1,30 @@
-const { model } = require("mongoose")
-const { UserSchema } = require("../schemas/UserSchema")
+const mongoose = require("mongoose")
+const bcrypt = require("bcrypt")
 
-const { UserModel } = new model("user", UserSchema)
+const UserSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: [true, "Email address is required"],
+        unique: true
+    },
 
-module.exports = { UserModel }
+    username: {
+        type: String,
+        required: [true, "Username address is required"],
+        unique: true
+    },
+    password: {
+        type: String,
+        required: [true, "Email address is required"],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+})
+
+UserSchema.pre("save", async function () {
+    this.password = await bcrypt.hash(this.password, 12)
+});
+
+module.exports = mongoose.model("user", UserSchema);
