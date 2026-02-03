@@ -5,7 +5,7 @@ import Summary from "./Summary";
 function HomeScreen() {
   return (
     <>
-      <Chart />
+      {/* <Chart /> */}
       <Summary />
     </>
   );

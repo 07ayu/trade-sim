@@ -138,7 +138,6 @@ code {
   color: #c9c9c9;
 }
 
-
 .btn-blue:hover {
   background: #74a7fa;
 }
@@ -244,7 +243,6 @@ code {
   color: rgb(72, 194, 55);
 }
 
-
 .item:hover {
   cursor: pointer;
 }
@@ -302,29 +300,10 @@ hr {
   margin-left: 20px;
 }
 
-.profile .avatar {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  position: relative;
-  font-size: 0.7rem;
-  font-weight: 400;
-  color: rgb(221, 139, 221);
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  text-align: center;
-  display: flex;
-  background: rgb(252, 229, 252);
-  margin-right: 8px;
-}
-
 .profile .username {
   font-size: 0.8rem;
   font-weight: 300;
 }
-
-
 
 .menu:hover {
   color: rgb(245, 104, 52);

@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { selectCurrentUser } from "../redux/slices/authReducer";
+import { useSelector } from "react-redux";
+import LogoutPanel from "../signup/logoutPanel";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   // const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const user = useSelector(selectCurrentUser);
+
+  useEffect(() => {
+    console.log(user[0]);
+  });
 
   const handleMenuClick = (index) => {
     setSelectedMenu(index);
@@ -92,12 +100,15 @@ const Menu = () => {
           </li>
         </ul>
         <hr />
-        <Link to={"/"}>
+        <Link to={""}>
           {" "}
           <div className="profile" onClick={handleMenuClick}>
-            <div className="avatar">ZU</div>
+            <div className=" w-[30px] h-[30px] text-center relative text-[0.7rem] font-normal text-[rgb(221,139,221)] justify-center items-center rounded-full flex bg-[rgb(252,229,252)] mr-2">
+              {user?.[0]}
+            </div>
             <p className="username">USERID</p>
           </div>
+          <LogoutPanel />
         </Link>
       </div>
     </div>

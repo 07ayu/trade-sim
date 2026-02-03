@@ -1,35 +1,35 @@
 import { useState } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-// import Signup from "./Signup";
-// import { Done } from "@mui/icons-material";
-// import { toast } from "react-toastify";
 
-export default function Signup() {
+import axios_api from "../network/axios_api";
+
+import { useDispatch } from "react-redux";
+import { setAuth, setError, setLoading } from "../redux/slices/authReducer";
+
+export default function TradeSim() {
   //added
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
+  const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
-    // console.log(data);
-    // navigate("/dashboard")
     try {
-      await axios
-        .post("http://localhost:3000/signup}", {
-          username: data.name,
-          email: data.email,
-          password: data.password,
-        })
-        .then((res) => {
-          if (res.data.success) {
-            console.log(res);
-            console.log("Done");
-          }
-        });
+      dispatch(setLoading());
+
+      const res = await axios_api.post("/login", {
+        email: data.email,
+        password: data.password,
+      });
+      console.log(res.data);
+
+      if (res.data.success) {
+        dispatch(setAuth(res.data));
+        navigate("/dashboard");
+      }
     } catch (error) {
-      console.log(error.message);
+      dispatch(setError(error.response?.data?.message));
     }
   };
 
@@ -67,7 +67,9 @@ export default function Signup() {
   // };
 
   return (
-    <>
+    <div className=" bg-gray-50 py-12l">
+      {/* Navigation */}
+
       {/* Main Content */}
       <div className="flex  items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
@@ -76,39 +78,15 @@ export default function Signup() {
             {/* Header */}
             <div className="px-8 pt-8 pb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Create account
+                "Welcome back"
               </h1>
-              <p className="text-gray-600">
-                Start your trading simulation journey
-              </p>
+              <p className="text-gray-600">Login to your Trade Sim account</p>
             </div>
 
             {/* Form */}
-            <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="px-8 pb-8">
                 <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        size={20}
-                      />
-                      <input
-                        {...register("name", { required: true })}
-                        type="text"
-                        name="name"
-                        // value={formData.name}
-                        // onChange={handleChange}
-                        // onKeyPress={handleKeyPress}
-                        placeholder="Enter your full name"
-                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-
                   {/* email */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -124,9 +102,6 @@ export default function Signup() {
                         type="email"
                         name="email"
                         id="email"
-                        // value={formData.email}
-                        // onChange={handleChange}
-                        // onKeyPress={handleKeyPress}
                         placeholder="Enter your email"
                         className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
@@ -147,9 +122,6 @@ export default function Signup() {
                         {...register("password", { minLength: 6 })}
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        // value={formData.password}
-                        // onChange={handleChange}
-                        // onKeyPress={handleKeyPress}
                         placeholder="Enter your password"
                         className="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
@@ -167,12 +139,31 @@ export default function Signup() {
                     </div>
                   </div>
 
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="rememberMe"
+                        {...register("rememberMe")}
+                        className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">
+                        Remember me
+                      </span>
+                    </label>
+                    <a
+                      href="#"
+                      className="text-sm text-green-600 hover:text-green-700 font-medium"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
+
                   <button
                     type="submit"
-                    // onClick={isLogin ? handleLogin : handleSignup}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md"
                   >
-                    Create account
+                    Login
                   </button>
                 </div>
 
@@ -229,7 +220,7 @@ export default function Signup() {
                     Already have an account?
                     <button
                       type="button"
-                      onClick={() => navigate("/login")}
+                      onClick={() => navigate("/signup")}
                       className="text-green-600 hover:text-green-700 font-semibold cursor-pointer"
                     >
                       Sign up
@@ -241,6 +232,6 @@ export default function Signup() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

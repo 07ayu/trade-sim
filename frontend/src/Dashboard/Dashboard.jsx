@@ -12,16 +12,16 @@ import Summary from "./Summary";
 import WatchList from "./WatchList";
 import { GeneralContextProvider } from "./GeneralContext";
 import CheckAuth from "../CheckAuth";
+import TopBar from "./TopBar";
 
 const Dashboard = () => {
   return (
     <GeneralContextProvider>
+      <TopBar />
       <div className="dashboard-container">
         <WatchList />
         <div className="content">
-          <CheckAuth>
-            <Outlet />
-          </CheckAuth>
+          <Outlet />
         </div>
       </div>
     </GeneralContextProvider>

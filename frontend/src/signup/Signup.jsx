@@ -3,12 +3,11 @@ import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
 // import Signup from "./Signup";
 // import { Done } from "@mui/icons-material";
 // import { toast } from "react-toastify";
 
-export default function TradeSim() {
+export default function Signup() {
   //added
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
@@ -18,7 +17,8 @@ export default function TradeSim() {
     // navigate("/dashboard")
     try {
       await axios
-        .post("http://localhost:3000/login", {
+        .post("http://localhost:3000/signup}", {
+          username: data.name,
           email: data.email,
           password: data.password,
         })
@@ -67,9 +67,7 @@ export default function TradeSim() {
   // };
 
   return (
-    <div className=" bg-gray-50 py-12l">
-      {/* Navigation */}
-
+    <>
       {/* Main Content */}
       <div className="flex  items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
@@ -78,15 +76,39 @@ export default function TradeSim() {
             {/* Header */}
             <div className="px-8 pt-8 pb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                "Welcome back"
+                Create account
               </h1>
-              <p className="text-gray-600">Login to your Trade Sim account</p>
+              <p className="text-gray-600">
+                Start your trading simulation journey
+              </p>
             </div>
 
             {/* Form */}
             <form action="" onSubmit={handleSubmit(onSubmit)}>
               <div className="px-8 pb-8">
                 <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        {...register("name", { required: true })}
+                        type="text"
+                        name="name"
+                        // value={formData.name}
+                        // onChange={handleChange}
+                        // onKeyPress={handleKeyPress}
+                        placeholder="Enter your full name"
+                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
                   {/* email */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -145,34 +167,12 @@ export default function TradeSim() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="rememberMe"
-                        {...register("rememberMe")}
-                        // checked={formData.rememberMe}
-                        // onChange={handleChange}
-                        className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">
-                        Remember me
-                      </span>
-                    </label>
-                    <a
-                      href="#"
-                      className="text-sm text-green-600 hover:text-green-700 font-medium"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
-
                   <button
                     type="submit"
                     // onClick={isLogin ? handleLogin : handleSignup}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md"
                   >
-                    Login
+                    Create account
                   </button>
                 </div>
 
@@ -229,10 +229,10 @@ export default function TradeSim() {
                     Already have an account?
                     <button
                       type="button"
-                      onClick={() => navigate("/signup")}
+                      onClick={() => navigate("/login")}
                       className="text-green-600 hover:text-green-700 font-semibold cursor-pointer"
                     >
-                      Sign up
+                      login
                     </button>
                   </p>
                 </div>
@@ -241,6 +241,6 @@ export default function TradeSim() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

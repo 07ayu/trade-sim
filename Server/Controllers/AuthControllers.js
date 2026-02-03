@@ -1,6 +1,7 @@
 const User = require("../schemas/UserSchema")
 const { CreateSecretToken } = require("../utils/SecretToken")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken");
 
 module.exports.Signup = async (req, res, next) => {
     try {
@@ -10,19 +11,19 @@ module.exports.Signup = async (req, res, next) => {
         const ExistingUser = await User.findOne({ email })
 
         if (ExistingUser) {
-            return res.json({ message: "user already exists" })
+            return res.Status(409).json({ message: "user already exists" })
         }
 
         const user = await User.create({ email, password, username, createdAt });
         const token = CreateSecretToken(user._id);
 
         res.cookie("token", token, {
-            withCredential: false,
-            httpOnly: false,
+            withCredential: true,
+            secure: false,
+            httpOnly: true,
         })
 
         res.status(201).json({ message: " User Signed in Successfully", success: true, user })
-        next();
 
 
     } catch (error) {
@@ -48,13 +49,43 @@ module.exports.Login = async (req, res, next) => {
         const token = CreateSecretToken(user._id);
         res.cookie("token", token, {
             withCredential: true,
-            httpOnly: false,
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
         })
 
-        res.status(201).json({ message: "User logged in Successfully ", success: true })
-        next()
+        res.status(201).json({ message: "User logged in Successfully ", success: true, user })
 
     } catch (error) {
         console.error(error)
+    }
+}
+
+module.exports.me = async (req, res) => {
+    const token = req.cookies.token;
+
+
+    if (!token) {
+        return res.json({ Authenticated: false });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        const userData = await User.findById(decoded.id).select("-password")
+        // console.log(user)
+        if (!userData) {
+            return res.json({ Authentication: false })
+        }
+        res.json({
+            Authenticated: true,
+            user: {
+                id: userData._id,
+                email: userData.email,
+                username: userData.username
+            }
+        })
+
+    } catch (error) {
+        res.json({ Authenticated: false })
     }
 }

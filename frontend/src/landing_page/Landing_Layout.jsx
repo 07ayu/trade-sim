@@ -2,19 +2,19 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 // import "./index.css";
-import HomePage from "./home/HomePage";
-// import Home from "../Dashboard/Home";
-// import Signup from "./signup/Signup";
-import About from "./about/AboutPage";
-import ProductPage from "./product/ProductPage";
-import Pricing from "./pricing/PricingPage";
-import Support from "./support/Support";
+// import HomePage from "./home/HomePage";
+// // import Home from "../Dashboard/Home";
+// // import Signup from "./signup/Signup";
+// import About from "./about/AboutPage";
+// import ProductPage from "./product/ProductPage";
+// import Pricing from "./pricing/PricingPage";
+// import Support from "./support/Support";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import NotFound from "./Notfound";
-import Aigen from "./signup/Aigen";
+// import NotFound from "./Notfound";
+// import Aigen from "./signup/Aigen";
 
-import Dashboard from "../Dashboard/Dashboard";
+// import Dashboard from "../Dashboard/Dashboard";
 import { ToastContainer } from "react-toastify";
 
 // function App() {
