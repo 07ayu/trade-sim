@@ -18,9 +18,11 @@ const cookieParser = require("cookie-parser")
 const authRoute = require("./routes/AuthRoutes")
 const tradeRoute = require("./routes/tradeRoutes")
 const PORT = process.env.PORT || 3000
-const url = process.env.MONGO_URL
 
 const app = express()
+
+const { connectRedis } = require("./utils/redis")
+const { connectMongo } = require("./utils/mongoDb")
 
 app.use(cors({
     origin: "http://localhost:5173",
@@ -29,8 +31,6 @@ app.use(cors({
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use("/", authRoute, tradeRoute)
-
-
 
 
 app.get("/allHoldings", async (req, res) => {
@@ -62,11 +62,16 @@ app.post("/newOrder", async (req, res) => {
 
 
 
-app.listen(PORT, () => {
+
+app.listen(PORT, async () => {
     console.log(`App started!${PORT}`)
-    mongoose.connect(url)
-    // console.log("DB Connected")
-    mongoose.connection.on("connected", () => {
-        console.log("db coneected")
-    })
+
+    try {
+        await connectMongo()
+        await connectRedis()
+    } catch (error) {
+        console.log(error)
+        process.exit(1)
+    }
+
 });
