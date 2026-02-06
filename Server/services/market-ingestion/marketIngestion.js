@@ -6,9 +6,12 @@ const publishTick = require("./publisher")
 
 async function start() {
     await connectRedis();
+    let running = true
+
+    const sleep = await new Promise(res => setTimeout(res, 2000))
 
 
-    while (true) {
+    while (running) {
         try {
             const price = await fetchCurrentPrice()
 
@@ -22,8 +25,9 @@ async function start() {
             console.log("tick published", tick)
         } catch (error) {
             console.log("Market Ingestion Error", error.message)
+            await sleep(5000)
         }
-        await new Promise(res => setTimeout(res, 2000))
+        await sleep(2000)
     }
 
 }
