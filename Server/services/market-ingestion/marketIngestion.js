@@ -1,16 +1,16 @@
 require("dotenv").config();
 
-const { redisClient, connectRedis } = require("../../utils/redis")
+const { publisher, connectRedis } = require("../pubsub/redis")
 const fetchCurrentPrice = require("./marketData")
 const publishTick = require("./publisher")
 
 async function start() {
-    await connectRedis();
+
     let running = true
 
-    const sleep = await new Promise(res => setTimeout(res, 2000))
+    const sleep = (ms) => new Promise(res => setTimeout(res, ms))
 
-
+    connectRedis()
     while (running) {
         try {
             const price = await fetchCurrentPrice()
@@ -18,16 +18,16 @@ async function start() {
             const tick = {
                 symbol: "NSE:RELIANCE",
                 price,
-                timestamp: Date.now(),
-                source: "poller"
+                // timestamp: Date.now(),
+                // source: "poller"
             }
-            await publishTick(tick)
+            await publisher.publish("price_update", JSON.stringify(tick))
             console.log("tick published", tick)
         } catch (error) {
             console.log("Market Ingestion Error", error.message)
             await sleep(5000)
         }
-        await sleep(2000)
+        await sleep(5000)
     }
 
 }
