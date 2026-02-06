@@ -2,10 +2,11 @@ const axios = require("axios")
 
 const fetchCurrentPrice = async (symbol) => {
 
-    const base_url = "https://script.google.com/macros/s/AKfycbwNfDapLujvIYCItV5fDrU8JNmFNkpOfNDs9mtF1ZH2c4sFrb0xb5TXaKUIbE9RJNdtZw/exec"
+    const base_url = "https://script.google.com/macros/s/AKfycbw5ym4Z5GgcwOZRhSu-FEwuLFtZDzAL0EmwQHqp5KU7jMmYMtMWQelRMXdU1AkthU_V3A/exec"
+    // ? symbol = ${ encodeURIComponent(symbol)
 
     try {
-        const res = await axios.get(`${base_url}?symbol=${encodeURIComponent(symbol)}`)
+        const res = await axios.get(`${base_url}`)
         if (!res.data || res.data.length === 0) {
             throw new Error("invalid price data format")
         }

@@ -8,6 +8,6 @@ module.exports.CreateSecretToken = (id) => {
 
 module.exports.CreateRefreshToken = (id) => {
     return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
-        expiresin: 3 * 60 * 60 * 24
-    })
+        expiresIn: 3 * 60 * 60 * 24
+    })//no implemented
 }

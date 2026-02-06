@@ -7,7 +7,7 @@ const router = require("express").Router();
 // router.post("/", userVerification)
 router.post("/signup", Signup);
 router.post("/login", Login)
-router.get("/me", me)
+router.get("/me", userVerification, me)
 router.get("/logout", logout)
 
 

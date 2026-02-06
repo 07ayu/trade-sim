@@ -15,15 +15,21 @@ module.exports.Signup = async (req, res, next) => {
         }
 
         const user = await User.create({ email, password, username, createdAt });
-        const token = CreateSecretToken(user._id);
+        const token = CreateSecretToken(user._id, user.email);
 
         res.cookie("token", token, {
-            withCredential: true,
             secure: false,
             httpOnly: true,
+            sameSite: "lax"
         })
 
-        res.status(201).json({ message: " User Signed in Successfully", success: true, user })
+        res.status(201).json({
+            message: " User Signed in Successfully", success: true, user: {
+                id: user._id,
+                email: user.email,
+                username: user.username
+            }
+        })
 
 
     } catch (error) {
@@ -47,6 +53,7 @@ module.exports.Login = async (req, res, next) => {
         }
 
         const token = CreateSecretToken(user._id);
+
         res.cookie("token", token, {
             withCredential: true,
             httpOnly: true,
@@ -54,7 +61,16 @@ module.exports.Login = async (req, res, next) => {
             sameSite: "lax"
         })
 
-        res.status(201).json({ message: "User logged in Successfully ", success: true, user })
+        res.status(201).json({
+            message: "User logged in Successfully ",
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                username: user.username
+            }
+        })
 
     } catch (error) {
         console.error(error)
@@ -70,8 +86,7 @@ module.exports.me = async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        const userData = await User.findById(decoded.id).select("-password")
+        const userData = await User.findById(req.user.id).select("-password")
         // console.log(user)
         if (!userData) {
             return res.json({ Authentication: false })
