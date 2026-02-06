@@ -28,7 +28,7 @@ import Login from "./signup/login";
 import Aigen from "./signup/Signup";
 import { useDispatch } from "react-redux";
 
-import { setAuth } from "./redux/slices/authReducer";
+import { logout, setAuth, setLoading } from "./redux/slices/authReducer";
 
 function App() {
   const dispatch = useDispatch();
@@ -36,12 +36,14 @@ function App() {
   useEffect(() => {
     const restoreAuth = async () => {
       try {
+        dispatch(setLoading())
         const res = await axios_api("/me");
 
         if (res.data.Authenticated) {
           dispatch(setAuth(res.data));
         }
       } catch (err) {
+        dispatch(logout)
         console.log(err);
       }
     };

@@ -5,7 +5,7 @@ const initialState = {
     username: null,
 
     Authenticated: false,
-    loading: false,
+    loading: true,
     error: null,
 
 
@@ -32,6 +32,7 @@ export const AuthSlice = createSlice({
         logout: (state) => {
             state.email = null;
             state.Authenticated = false;
+            state.loading = false
         }
     }
 })
@@ -42,3 +43,4 @@ export default AuthSlice.reducer;
 export const selectCurrentEmail = (state) => state.auth.email
 export const selectCurrentUser = (state) => state.auth.username
 export const selectCurrentAuthenticated = (state) => state.auth.Authenticated
+export const selectCurrentAuthLoading = (state)=> state.auth.loading
