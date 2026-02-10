@@ -8,14 +8,15 @@ const redisConfig = {
 }
 
 const publisher = redis.createClient(redisConfig)
-const subscriber = redis.createClient(redisConfig)
+const subscriber = publisher.duplicate()
 
 publisher.on("error", (err) => console.error("publisher error", err))
 subscriber.on("error", (err) => console.error("subscriber error", err))
 
-const connectRedish = async () => {
+const connectRedis = async () => {
     if (!publisher.isOpen) await publisher.connect()
     if (!subscriber.isOpen) await subscriber.connect()
+    console.log("connected")
 }
 
-module.exports = { connectRedish, publisher, subscriber }
+module.exports = { connectRedis, publisher, subscriber }

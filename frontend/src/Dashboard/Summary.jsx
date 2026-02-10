@@ -4,7 +4,7 @@ import TradingViewWidget from "./components/TradingViewWidget";
 const Summary =  () => {
   return (
     <>
-      {/* <TradingViewWidget /> */}
+      <TradingViewWidget />
 
       <div className="username">
         <h6>Hi, User!</h6>

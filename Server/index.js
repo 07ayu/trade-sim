@@ -21,8 +21,11 @@ const PORT = process.env.PORT || 3000
 
 const app = express()
 
-const { connectRedis } = require("./utils/redis")
-const { connectMongo } = require("./utils/mongoDb")
+const { connectRedis } = require("./services/pubsub/redis")
+const { connectMongo } = require("./utils/mongoDb");
+const { priceCache } = require('./services/pubsub/priceChache');
+
+
 
 app.use(cors({
     origin: "http://localhost:5173",
@@ -69,6 +72,7 @@ app.listen(PORT, async () => {
     try {
         await connectMongo()
         await connectRedis()
+        await priceCache()
     } catch (error) {
         console.log(error)
         process.exit(1)

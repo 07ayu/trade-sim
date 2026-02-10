@@ -5,7 +5,7 @@ const initialState = {
     username: null,
 
     Authenticated: false,
-    loading: true,
+    loading: false,
     error: null,
 
 
@@ -23,7 +23,7 @@ export const AuthSlice = createSlice({
             state.email = action.payload.user.email
             state.username = action.payload.user.username
             state.Authenticated = true
-            state.loading = false
+            // state.loading = false
         },
         setError: (state, action) => {
             state.loading = false
