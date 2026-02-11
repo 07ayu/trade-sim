@@ -1,13 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { RedisService } from './redis.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RedisPublisher {
-  private client: redis;
+  constructor(private redisService: RedisService) {}
 
-  constructor() {
-    this.client = new Redis();
-  }
-  publish(channel: string, message: any) {
-    this.client.publish(this.channel, this);
+  async publish(channel: string, message: any) {
+    const client = this.redisService.getPublisher();
+    await client.publish(channel, JSON.stringify(message));
   }
 }
