@@ -1,4 +1,4 @@
-import { PriceSubscriber } from './pirce.subscriber';
+import { PriceSubscriber } from './price.subscriber';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

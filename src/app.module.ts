@@ -9,6 +9,7 @@ import { LedgerModule } from './modules/ledger/ledger.module';
 import { PnlModule } from './modules/pnl/pnl.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
+import { DatabaseModule } from './infrastructure/database/database.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
     GatewayModule,
     RedisModule,
     PriceModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

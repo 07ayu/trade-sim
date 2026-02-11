@@ -5,7 +5,7 @@ import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { OrderPublisher } from './order.publisher';
 
 @Module({
-  imports: [RedisModule],
+  imports: [RedisModule], ,
   controllers: [OrdersController],
   providers: [OrdersService, OrderPublisher],
   exports: [OrdersService],

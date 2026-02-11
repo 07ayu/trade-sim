@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PriceController } from './price.controller';
 import { PriceService } from './price.service';
-import { PriceSubscriber } from './pirce.subscriber';
+import { PriceSubscriber } from './price.subscriber';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 
 @Module({

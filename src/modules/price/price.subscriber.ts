@@ -1,4 +1,4 @@
-import { RedisSubscriber } from './../../infrastructure/redis/redis.subscriber';
+import { RedisSubscriber } from '../../infrastructure/redis/redis.subscriber';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import type { PriceUpdateEvent } from 'src/events/price-update.event';
 
