@@ -1,3 +1,4 @@
+// import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,9 +11,12 @@ import { PnlModule } from './modules/pnl/pnl.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
+import { AppConfigModule } from './config/configeration';
 
 @Module({
   imports: [
+    AppConfigModule,
+    DatabaseModule,
     AuthModule,
     UsersModule,
     PriceModule,
@@ -22,7 +26,9 @@ import { DatabaseModule } from './infrastructure/database/database.module';
     GatewayModule,
     RedisModule,
     PriceModule,
-    DatabaseModule,
+    // MongooseModule.forRoot(
+    //   'mongodb+srv://Zerodha-clone:Zerodha-clone@zerodha-clone.vsed0wb.mongodb.net/zerodha?appName=Zerodha-Clone',
+    // ),
   ],
   controllers: [AppController],
   providers: [AppService],

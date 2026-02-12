@@ -20,14 +20,14 @@ export class RedisService implements OnModuleInit {
     this.subscriber = baseClient.duplicate();
 
     this.publisher.on('connect', () => {
-      console.log('connected');
+      console.log('publisher connected');
     });
     this.publisher.on('error', (error) => {
       console.log('error', error);
     });
 
     this.subscriber.on('connect', () => {
-      console.log('connected');
+      console.log('Subcriber connected');
     });
     this.subscriber.on('error', (error) => {
       console.log('error', error);
