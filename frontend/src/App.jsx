@@ -31,24 +31,24 @@ import { useDispatch } from "react-redux";
 import { setAuth } from "./redux/slices/authReducer";
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    const restoreAuth = async () => {
-      try {
-        // dispatch(setLoading())
-        const res = await axios_api("/me");
+  // useEffect(() => {
+  //   const restoreAuth = async () => {
+  //     try {
+  //       // dispatch(setLoading())
+  //       const res = await axios_api("/me");
 
-        if (res.data?.Authenticated) {
-          dispatch(setAuth(res.data));
-        }
-      } catch (err) {
-        console.log("/me in react > app", err);
-      }
-    };
+  //       if (res.data?.Authenticated) {
+  //         dispatch(setAuth(res.data));
+  //       }
+  //     } catch (err) {
+  //       console.log("/me in react > app", err);
+  //     }
+  //   };
 
-    restoreAuth();
-  }, []);
+  //   restoreAuth();
+  // }, []);
 
   return (
     <Routes>
@@ -62,16 +62,16 @@ function App() {
         <Route path="support" element={<Support />} />
         <Route path="*" element={<NotFound />} />
       </Route>
-      <Route element={<CheckAuth />}>
-        <Route path="/dashboard" element={<Dashboard />}>
-          <Route index element={<Summary />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="holdings" element={<Holdings />} />
-          <Route path="positions" element={<Positions />} />
-          <Route path="funds" element={<Funds />} />
-          <Route path="apps" element={<Apps />} />
-        </Route>
+      {/* <Route element={<CheckAuth />}> */}
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route index element={<Summary />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="holdings" element={<Holdings />} />
+        <Route path="positions" element={<Positions />} />
+        <Route path="funds" element={<Funds />} />
+        <Route path="apps" element={<Apps />} />
       </Route>
+      {/* </Route> */}
     </Routes>
   );
 }

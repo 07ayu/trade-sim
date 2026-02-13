@@ -39,4 +39,4 @@ const OrdersSchema = new mongoose.Schema({
     }
 })
 
-export default mongoose.model("order", OrdersSchema)a
+export default mongoose.model("order", OrdersSchema)

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { io } from "socket.io-client";
 
 import { Tooltip, Grow } from "@mui/material";
 import {
@@ -13,6 +14,7 @@ import GeneralContext from "./GeneralContext";
 import { watchlist } from "./data/data";
 
 import { DoughnutChart } from "./DoughnutChart";
+import { Socket } from "socket.io-client";
 // const labels = watchlist.map((subArray) => (subArray = ["name"]));
 
 const WatchList = () => {
@@ -78,6 +80,12 @@ const WatchlistItem = ({ stock }) => {
     setShowWatchListActions(false);
   };
 
+  // const socket = io("http://localhost:3000"); // your backend port
+  
+  // handeleBuy(){
+  //   socket.emit("")
+  // }
+
   return (
     <li onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="item">
@@ -115,7 +123,10 @@ const WatchlistActions = ({ uid }) => {
           TransitionComponent={Grow}
           onClick={HandleBuyClick}
         >
-          <button className="buy"> Buy</button>
+          <button className="buy" onClick={handeleBuy()}>
+            {" "}
+            Buy
+          </button>
         </Tooltip>
 
         <Tooltip
