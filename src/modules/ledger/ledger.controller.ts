@@ -7,6 +7,7 @@ export class LedgerController {
 
   @Get(':userId')
   getUserLedger(@Param('userId') userId: string) {
+    console.log(this.ledgerService.getUserBalance(userId));
     return this.ledgerService.getUserBalance(userId);
   }
 }

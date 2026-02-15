@@ -8,10 +8,12 @@ import { PriceModule } from './modules/price/price.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { LedgerModule } from './modules/ledger/ledger.module';
 import { PnlModule } from './modules/pnl/pnl.module';
-import { GatewayModule } from './modules/gateway/gateway.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { AppConfigModule } from './config/configeration';
+// import { GatewayGateway } from './modules/gateway/gateway.gateway';
+import { RiskModule } from './modules/risk/risk.module';
+import { MatchingModule } from './modules/matching/matching.module';
 
 @Module({
   imports: [
@@ -23,12 +25,10 @@ import { AppConfigModule } from './config/configeration';
     LedgerModule,
     OrdersModule,
     PnlModule,
-    GatewayModule,
     RedisModule,
     PriceModule,
-    // MongooseModule.forRoot(
-    //   'mongodb+srv://Zerodha-clone:Zerodha-clone@zerodha-clone.vsed0wb.mongodb.net/zerodha?appName=Zerodha-Clone',
-    // ),
+    RiskModule,
+    MatchingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

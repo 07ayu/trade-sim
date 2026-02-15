@@ -3,9 +3,10 @@ import { LedgerController } from './ledger.controller';
 import { LedgerService } from './ledger.service';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { LedgerSubscriber } from './ledger.subscriber';
+import { OrderDatabaseModule } from '../orders/order.database';
 
 @Module({
-  imports: [RedisModule],
+  imports: [RedisModule, OrderDatabaseModule],
   controllers: [LedgerController],
   providers: [LedgerService, LedgerSubscriber],
   exports: [LedgerService],

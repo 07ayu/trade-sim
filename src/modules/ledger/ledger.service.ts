@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { Order, OrderDocument } from '../orders/models/order.schema';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { OrderFilledEvent } from 'src/events/order-filled.event';
+import { InjectModel } from '@nestjs/mongoose';
 
 type balance = {
   cash: number;
@@ -7,11 +10,19 @@ type balance = {
 };
 
 @Injectable()
-export class LedgerService {
+export class LedgerService implements OnModuleInit {
   private userBalance: Map<string, balance> = new Map();
+  constructor(
+    @InjectModel(Order.name)
+    private readonly orderModel: Model<OrderDocument>,
+  ) {}
+
+  async onModuleInit() {
+    await this.rebuildFromOrder();
+  }
 
   updateBalance(event: OrderFilledEvent) {
-    const { userId, symbol, side, qty, price } = event;
+    const { userId, symbol, side, quantity, price } = event;
 
     //if the user has no user id then give him 10k
     if (!this.userBalance.has(userId)) {
@@ -25,14 +36,14 @@ export class LedgerService {
     if (!balance) {
       return;
     }
-    const currentQty = balance.holdings.get(symbol) ?? 0;
+    const currentQuantity = balance.holdings.get(symbol) ?? 0;
 
     if (side == 'BUY') {
-      balance.cash -= qty * price;
-      balance.holdings.set(symbol, currentQty + qty);
+      balance.cash -= quantity * price;
+      balance.holdings.set(symbol, currentQuantity + quantity);
     } else {
-      balance.cash += qty * price;
-      balance.holdings.set(symbol, currentQty - qty);
+      balance.cash += quantity * price;
+      balance.holdings.set(symbol, currentQuantity - quantity);
     }
 
     console.log('balance updated', balance, userId);
@@ -40,5 +51,27 @@ export class LedgerService {
 
   getUserBalance(userId: string) {
     return this.userBalance.get(userId);
+  }
+
+  async rebuildFromOrder() {
+    this.userBalance.clear();
+    const orders = await this.orderModel
+      .find({ status: 'EXECUTED' })
+      .sort({ createdAt: 1 })
+      .lean();
+    console.log('got order details');
+
+    for (const order of orders) {
+      const event: OrderFilledEvent = {
+        userId: order.userId.toString(),
+        symbol: order.symbol,
+        side: order.side,
+        quantity: order.quantity,
+        price: order.price,
+        status: order.status,
+      };
+      this.updateBalance(event);
+      console.log('ledger ReHyderated');
+    }
   }
 }

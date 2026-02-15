@@ -1,13 +1,14 @@
 import { OrdersService } from './orders.service';
 import { Body, Controller, Post } from '@nestjs/common';
-import type { OrderCreatedEvent } from 'src/events/order-created.event';
+import { OrderCreatedDto } from './dto/order-created.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
   @Post('')
-  async create(@Body() body: OrderCreatedEvent) {
+  async create(@Body() body: OrderCreatedDto) {
+    console.log('got order got posted');
     await this.ordersService.createOrder(body);
     return { message: 'order event Published' };
   }

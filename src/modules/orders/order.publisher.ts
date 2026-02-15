@@ -7,6 +7,7 @@ export class OrderPublisher {
   constructor(private redisPublisher: RedisPublisher) {}
 
   async OrderCreated(event: OrderCreatedEvent) {
+    console.log('order Created event published');
     await this.redisPublisher.publish('order_created', event);
   }
 }

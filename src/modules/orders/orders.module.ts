@@ -4,9 +4,10 @@ import { OrdersService } from './orders.service';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { OrderPublisher } from './order.publisher';
 import { OrderDatabaseModule } from './order.database';
+import { RiskModule } from '../risk/risk.module';
 
 @Module({
-  imports: [RedisModule, OrderDatabaseModule],
+  imports: [RedisModule, OrderDatabaseModule, RiskModule],
   controllers: [OrdersController],
   providers: [OrdersService, OrderPublisher],
   exports: [OrdersService],

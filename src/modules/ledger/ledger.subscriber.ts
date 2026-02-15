@@ -11,7 +11,7 @@ export class LedgerSubscriber implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.redisSubscriber.subscribe('order_created', (msg: string) => {
+    await this.redisSubscriber.subscribe('order_filled', (msg: string) => {
       const data = JSON.parse(msg) as unknown as OrderCreatedEvent;
       this.ledgerService.updateBalance(data);
     });

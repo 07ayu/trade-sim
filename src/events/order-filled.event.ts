@@ -1,7 +1,11 @@
 export type OrderFilledEvent = {
-  userId: string;
+  buyerUserId: string;
+  sellerUserId: string;
   symbol: string;
   side: 'BUY' | 'SELL';
-  qty: number;
+  quantity: number;
+  remainingQuantity: number;
   price: number;
+  status: 'FAILED' | 'PENDING' | 'EXECUTED' | 'PARTIALLY_FILLED' | 'FILLED';
+  createdAt?: Date;
 };

@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Types, HydratedDocument } from 'mongoose';
 
-@Schema({ timestamps: false })
+@Schema({ timestamps: true })
 export class Order {
   @Prop({
     type: Types.ObjectId,
@@ -27,13 +27,18 @@ export class Order {
     min: 0,
     required: true,
   })
+  remainingQuantity: number;
+  @Prop({
+    min: 0,
+    required: true,
+  })
   price: number;
 
   @Prop({
-    enum: ['FAILED', 'EXECUTED'],
-    default: 'EXECUTED',
+    enum: ['FAILED', 'PENDING', 'PARTIALLY_FILLED', 'EXECUTED'],
+    default: 'PENDING',
   })
-  status: 'FAILED' | 'EXECUTED';
+  status: 'FAILED' | 'PENDING' | 'EXECUTED' | 'PARTIALLY_FILLED';
 
   @Prop({
     required: true,
@@ -41,10 +46,10 @@ export class Order {
   })
   side: 'BUY' | 'SELL';
 
-  @Prop({
-    default: Date.now(),
-  })
-  createdAt: Date;
+  // @Prop({
+  //   // default: Date.now(),
+  // })
+  // createdAt: Date;
 }
 
 export type OrderDocument = HydratedDocument<Order>;
