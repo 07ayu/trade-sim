@@ -1,30 +1,25 @@
-import React from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
-
-import Apps from "./Apps";
-import Funds from "./Funds";
-import Holdings from "./Holdings";
-
-import "./dashboard-style.css";
-import Orders from "./Orders";
-import Positions from "./Positions";
-import Summary from "./Summary";
-import WatchList from "./WatchList";
-import { GeneralContextProvider } from "./GeneralContext";
-import CheckAuth from "../CheckAuth";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import WatchList from "./Sidebar/Watchlist";
 import TopBar from "./TopBar";
+import { Outlet } from "react-router-dom";
+import Menu from "./Navbar/Menu";
+import { GeneralContextProvider } from "./GeneralContext";
 
 const Dashboard = () => {
   return (
-    <GeneralContextProvider>
-      <TopBar />
-      <div className="dashboard-container">
-        <WatchList />
-        <div className="content">
-          <Outlet />
-        </div>
-      </div>
-    </GeneralContextProvider>
+    <>
+      <SidebarProvider>
+        <GeneralContextProvider>
+          <WatchList />
+          <SidebarInset>
+            <main>
+              <Menu />
+              <Outlet />
+            </main>
+          </SidebarInset>
+        </GeneralContextProvider>
+      </SidebarProvider>
+    </>
   );
 };
 

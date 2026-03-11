@@ -5,7 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import SocketTest from "./test";
+// import SocketTest from "./test";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -1,12 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Type } from "lucide-react";
+
+// Type 
 
 const initialState = {
     email: null,
     username: null,
 
     Authenticated: false,
-    loading: false,
+    // loading: false,
     error: null,
+    status: "unauthenticated"
 
 
 }
@@ -19,11 +23,15 @@ export const AuthSlice = createSlice({
             state.loading = true
             state.error = null
         },
+        setLoadingFalse: (state) => {
+            state.loading = false
+        },
         setAuth: (state, action) => {
             state.email = action.payload.user.email
             state.username = action.payload.user.username
             state.Authenticated = true
             // state.loading = false
+            // state.status = 'Authenticated'
         },
         setError: (state, action) => {
             state.loading = false
@@ -31,16 +39,19 @@ export const AuthSlice = createSlice({
         },
         logout: (state) => {
             state.email = null;
+            state.username = null
             state.Authenticated = false;
             state.loading = false
         }
     }
 })
 
-export const { setAuth, setError, setLoading, logout } = AuthSlice.actions;
+export const { setAuth,
+    setError, setLoading, setLoadingFalse,
+    logout } = AuthSlice.actions;
 export default AuthSlice.reducer;
 
 export const selectCurrentEmail = (state) => state.auth.email
 export const selectCurrentUser = (state) => state.auth.username
 export const selectCurrentAuthenticated = (state) => state.auth.Authenticated
-export const selectCurrentAuthLoading = (state)=> state.auth.loading
+export const selectCurrentAuthLoading = (state) => state.auth.loading

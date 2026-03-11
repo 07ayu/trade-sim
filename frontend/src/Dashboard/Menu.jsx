@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import LogoutPanel from "../signup/userPanel";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "./darkMode/darkmode";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -18,7 +20,8 @@ const Menu = () => {
   const activeMenuClass = "menu selected";
 
   return (
-    <div className="menu-container">
+    <div className="fixed ">
+      <SidebarTrigger />
       <img
         src="/images/trade_sim_logo.png"
         style={{ width: "100px" }}
@@ -95,6 +98,7 @@ const Menu = () => {
         </ul>
         <hr />
 
+        <ThemeToggle />
         <LogoutPanel />
       </div>
     </div>

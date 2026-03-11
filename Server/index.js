@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt")
 
 const { OrdersModel } = require("./model/OrdersModel")
-// const { HoldingsModel } = require("./model/HoldingsModel")
-// const { PositionsModel } = require("./model/PositionsModel");
+const { HoldingsModel } = require("./schemas/HoldingsModel")
+const { PositionsModel } = require("./schemas/PositionsModel");
 const bodyParser = require('body-parser');
 
 const cors = require("cors")
@@ -17,7 +17,7 @@ const cookieParser = require("cookie-parser")
 
 const authRoute = require("./routes/AuthRoutes")
 const tradeRoute = require("./routes/tradeRoutes")
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3002
 
 const app = express()
 
@@ -72,9 +72,9 @@ app.listen(PORT, async () => {
     try {
         await connectMongo()
         await connectRedis()
-        await priceCache()
+        // await priceCache()
     } catch (error) {
-        console.log(error)
+        console.log(error.msg)
         process.exit(1)
     }
 

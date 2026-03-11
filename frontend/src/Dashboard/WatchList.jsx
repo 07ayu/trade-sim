@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { io } from "socket.io-client";
+import React, { memo, useContext, useState } from "react";
+// import { io } from "socket.io-client";
 
 import { Tooltip, Grow } from "@mui/material";
 import {
@@ -17,7 +17,7 @@ import { DoughnutChart } from "./DoughnutChart";
 import { Socket } from "socket.io-client";
 // const labels = watchlist.map((subArray) => (subArray = ["name"]));
 
-const WatchList = () => {
+const WatchList = memo(() => {
   const data = {
     labels: watchlist.map((stock) => stock.name),
     datasets: [
@@ -66,11 +66,11 @@ const WatchList = () => {
       <DoughnutChart data={data} />
     </div>
   );
-};
+});
 
 export default WatchList;
 
-const WatchlistItem = ({ stock }) => {
+const WatchlistItem = memo(({ stock }) => {
   const [showWatchListActions, setShowWatchListActions] = useState(false);
 
   const handleMouseEnter = (e) => {
@@ -81,15 +81,11 @@ const WatchlistItem = ({ stock }) => {
   };
 
   // const socket = io("http://localhost:3000"); // your backend port
-  
-  // handeleBuy(){
-  //   socket.emit("")
-  // }
 
   return (
     <li onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="item">
-        <p className={stock.isDown ? "down" : "up"}>{stock.name}</p>
+        <p className={stock.isDown ? "down" : "up"}>{stock.symbol}</p>
 
         <div className="itemInfo">
           <span className="percent">{stock.percent}</span>
@@ -101,10 +97,19 @@ const WatchlistItem = ({ stock }) => {
           <span className="price">{stock.price}</span>
         </div>
       </div>
-      {showWatchListActions && <WatchlistActions uid={stock.name} />}
+      {showWatchListActions && (
+        <WatchlistActions
+          uid={{
+            symbol: stock.symbol,
+            // quantity: stock.quantity,
+            // side: stock.side,
+            price: stock.price,
+          }}
+        />
+      )}
     </li>
   );
-};
+});
 
 const WatchlistActions = ({ uid }) => {
   const generalContext = useContext(GeneralContext);
@@ -112,6 +117,9 @@ const WatchlistActions = ({ uid }) => {
   const HandleBuyClick = () => {
     generalContext.openBuyWindow(uid);
   };
+  //  const handelBuy(){
+  //   console.log("buy req")
+  // }
 
   return (
     <span className="actions">
@@ -123,10 +131,7 @@ const WatchlistActions = ({ uid }) => {
           TransitionComponent={Grow}
           onClick={HandleBuyClick}
         >
-          <button className="buy" onClick={handeleBuy()}>
-            {" "}
-            Buy
-          </button>
+          <button className="buy"> Buy</button>
         </Tooltip>
 
         <Tooltip

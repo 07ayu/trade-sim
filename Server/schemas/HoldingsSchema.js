@@ -9,4 +9,4 @@ const HoldingsSchema = new mongose.Schema({
     day: String,
 })
 
-export default mongose.model("holding", HoldingsSchema)
+module.exports = mongose.model("holding", HoldingsSchema)

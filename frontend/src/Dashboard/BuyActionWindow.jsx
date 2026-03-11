@@ -1,23 +1,48 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import axios from "axios";
-
 import GeneralContext from "./GeneralContext";
 
 import "./BuyActionWindow.css";
+import { axios_api } from "../network/axios_api";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(0.0);
+  const [stockPrice, setStockPrice] = useState(uid.price);
 
   const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
-      name: uid,
-      qty: stockQuantity,
-      Price: stockPrice,
-      mode: "BUY",
-    });
+    try {
+      axios_api
+        .post("/orders", {
+          userId: "u1",
+          symbol: uid.symbol,
+          side: "BUY",
+          quantity: Number(stockQuantity),
+          price: Number(stockPrice),
+        })
+        .then((res) => {
+          console.log(res.message);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+
+    GeneralContext.closeBuyWindow();
+  };
+
+  const handleSellClick = () => {
+    try {
+      axios_api.post("/orders", {
+        userId: "u1",
+        symbol: uid.symbol,
+        side: "BUY",
+        quantity: Number(stockQuantity),
+        price: Number(stockPrice),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
     GeneralContext.closeBuyWindow();
   };
 
@@ -63,6 +88,8 @@ const BuyActionWindow = ({ uid }) => {
           <Link className="btn btn-blue" onClick={handleBuyClick}>
             Buy
           </Link>
+
+          <Link className="btn btn-danger"> Sell</Link>
           <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
             Cancel
           </Link>

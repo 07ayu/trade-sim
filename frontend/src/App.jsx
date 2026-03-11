@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./index.css";
+// import "./index.css";
 import Landing_page from "./landing_page/Landing_Layout";
 
-import axios_api from "./network/axios_api";
+import { axios_api } from "./network/axios_api";
 
 import "./index.css";
 
@@ -20,35 +20,47 @@ import Summary from "./Dashboard/Summary";
 import Orders from "./Dashboard/Orders";
 import Holdings from "./Dashboard/Holdings";
 import Positions from "./Dashboard/Positions";
-import Funds from "./Dashboard/Funds";
-import Apps from "./Dashboard/Apps";
+import Funds from "./Dashboard/FundsDashBoard/Funds";
+// import Apps from "./Dashboard/Apps";
 
 import CheckAuth from "./CheckAuth";
-import Login from "./signup/login";
 import Aigen from "./signup/Signup";
 import { useDispatch } from "react-redux";
+import Login from "./signup/login";
 
-import { setAuth } from "./redux/slices/authReducer";
+import {
+  setAuth,
+  setError,
+  setLoading,
+  setLoadingFalse,
+} from "./redux/slices/authReducer";
 
 function App() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const restoreAuth = async () => {
-  //     try {
-  //       // dispatch(setLoading())
-  //       const res = await axios_api("/me");
+  useEffect(() => {
+    console.log("effect ran");
+    const restoreAuth = async () => {
+      try {
+        dispatch(setLoading());
+        const res = await axios_api.post("/auth/refresh");
 
-  //       if (res.data?.Authenticated) {
-  //         dispatch(setAuth(res.data));
-  //       }
-  //     } catch (err) {
-  //       console.log("/me in react > app", err);
-  //     }
-  //   };
+        console.log(res.data);
+        if (res.data.Authenticated) {
+          dispatch(setAuth(res.data));
+        } else {
+          dispatch(setError({ error: "auth failed" }));
+        }
+      } catch (err) {
+        console.log("Restore Auth Failed", err);
+        dispatch(setError({ error: "auth failed" }));
+      } finally {
+        dispatch(setLoadingFalse());
+      }
+    };
 
-  //   restoreAuth();
-  // }, []);
+    restoreAuth();
+  }, []);
 
   return (
     <Routes>
@@ -62,16 +74,16 @@ function App() {
         <Route path="support" element={<Support />} />
         <Route path="*" element={<NotFound />} />
       </Route>
-      {/* <Route element={<CheckAuth />}> */}
-      <Route path="/dashboard" element={<Dashboard />}>
-        <Route index element={<Summary />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="holdings" element={<Holdings />} />
-        <Route path="positions" element={<Positions />} />
-        <Route path="funds" element={<Funds />} />
-        <Route path="apps" element={<Apps />} />
+      <Route element={<CheckAuth />}>
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<Summary />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="holdings" element={<Holdings />} />
+          <Route path="positions" element={<Positions />} />
+          <Route path="funds" element={<Funds />} />
+          {/* <Route path="apps" element={<Apps />} /> */}
+        </Route>
       </Route>
-      {/* </Route> */}
     </Routes>
   );
 }

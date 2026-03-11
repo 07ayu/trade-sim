@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { axios_api } from "../network/axios_api";
 
 const Funds = () => {
+  const [balance, setBalance] = useState(0);
+  useEffect(() => {
+    axios_api
+      .get("/ledger/u1")
+      .then((res) => {
+        console.log(res.data);
+        setBalance(res.data.cash);
+        if (res < 0) setBalance(0);
+      })
+      .catch((err) => {
+        console.log("error at fetching funds", err);
+      });
+  }, []);
   return (
     <>
       <div className="funds">
         <p>Instant, zero-cost fund transfers with UPI </p>
-        <Link className="btn btn-green">Add funds</Link>
+        <Link className=" btn ">Add funds</Link>
         <Link className="btn btn-blue">Withdraw</Link>
       </div>
 
-      <div className="row">
+      <h1>AvAIlable Balance</h1>
+      <h3>{Math.floor(balance)}</h3>
+
+      {/* <div className="row">
         <div className="col">
           <span>
             <p>Equity</p>
@@ -80,7 +97,7 @@ const Funds = () => {
             <Link className="btn btn-blue">Open Account</Link>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

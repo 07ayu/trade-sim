@@ -1,38 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import axios_api from "../network/axios_api";
+import { axios_api } from "../network/axios_api";
 
-import { useDispatch } from "react-redux";
-import { setAuth, setError, setLoading } from "../redux/slices/authReducer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectCurrentAuthenticated,
+  selectCurrentAuthLoading,
+  setAuth,
+  setError,
+  setLoading,
+  setLoadingFalse,
+} from "../redux/slices/authReducer";
 
-export default function TradeSim() {
+export default function Login() {
   //added
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
+  const auth = useSelector(selectCurrentAuthenticated);
+
+  useEffect(() => {
+    if (auth === true) {
+      navigate("/dashboard", { replace: true });
+    }
+  });
 
   const onSubmit = async (data) => {
     try {
       dispatch(setLoading());
-
-      const res = await axios_api.post("/login", {
+      const res = await axios_api.post("/auth/login", {
         email: data.email,
         password: data.password,
       });
       console.log(res.data);
 
+      console.log(res.data);
+      console.log("Outside res.success condition");
       if (res.data.success) {
+        console.log("inside res.success condition");
         dispatch(setAuth(res.data));
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
     } catch (error) {
       dispatch(setError(error.response?.data?.message));
     }
   };
-
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -131,7 +146,7 @@ export default function TradeSim() {
 
                   <button
                     type="submit"
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md"
+                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md cursor-pointer"
                   >
                     Login
                   </button>

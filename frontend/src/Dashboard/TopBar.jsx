@@ -18,7 +18,7 @@ const TopBar = () => {
         </div>
       </div>
 
-      <Menu />
+      {/* <Menu /> */}
     </div>
   );
 };
