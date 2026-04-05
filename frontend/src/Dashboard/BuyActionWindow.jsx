@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import GeneralContext from "./GeneralContext";
@@ -8,51 +8,61 @@ import { axios_api } from "../network/axios_api";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(uid.price);
+  const [stockPrice, setStockPrice] = useState(uid.price || 0);
+  const { closeBuyWindow } = useContext(GeneralContext); // ✅ Get function from context
 
-  const handleBuyClick = () => {
+  // Validate uid has required properties
+  if (!uid || !uid.symbol) {
+    console.error("Invalid stock data received");
+    return <div>Error: Invalid stock data</div>;
+  }
+
+  const handleBuyClick = async () => {
     try {
-      axios_api
-        .post("/orders", {
-          userId: "u1",
-          symbol: uid.symbol,
-          side: "BUY",
-          quantity: Number(stockQuantity),
-          price: Number(stockPrice),
-        })
-        .then((res) => {
-          console.log(res.message);
-        });
-    } catch (err) {
-      console.log(err);
-    }
-
-    GeneralContext.closeBuyWindow();
-  };
-
-  const handleSellClick = () => {
-    try {
-      axios_api.post("/orders", {
-        userId: "u1",
+      const res = await axios_api.post("/orders", {
+        // userId: "u1",
         symbol: uid.symbol,
         side: "BUY",
         quantity: Number(stockQuantity),
         price: Number(stockPrice),
+        createdAt: new Date(),
       });
-    } catch (err) {
-      console.log(err);
-    }
 
-    GeneralContext.closeBuyWindow();
+      console.log("Buy order successful:", res.data);
+      closeBuyWindow(); // ✅ Use context function
+    } catch (err) {
+      console.error("Buy order failed:", err);
+      alert("Failed to place buy order");
+    }
+  };
+
+  const handleSellClick = async () => {
+    try {
+      const res = await axios_api.post("/orders", {
+        // userId: "u1",
+        symbol: uid.symbol,
+        side: "SELL",
+        quantity: Number(stockQuantity),
+        price: Number(stockPrice),
+        createdAt: new Date(),
+      });
+
+      console.log("Sell order successful:", res.data);
+      closeBuyWindow(); // Use context function
+    } catch (err) {
+      console.error("Sell order failed:", err);
+      alert("Failed to place sell order");
+    }
   };
 
   const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+    closeBuyWindow(); // Use context function
   };
 
   return (
     <div className="container" id="buy-window" draggable="true">
       <div className="regular-order">
+        <h3>Order for {uid.symbol}</h3>
         <div className="inputs">
           <fieldset>
             <legend>Qty.</legend>
@@ -85,14 +95,15 @@ const BuyActionWindow = ({ uid }) => {
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
+          <button className="btn btn-blue" onClick={handleBuyClick}>
             Buy
-          </Link>
-
-          <Link className="btn btn-danger"> Sell</Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          </button>
+          <button className="btn btn-danger" onClick={handleSellClick}>
+            Sell
+          </button>
+          <button className="btn btn-grey" onClick={handleCancelClick}>
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>

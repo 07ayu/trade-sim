@@ -66,7 +66,7 @@
 
 // export default Summary;
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -88,6 +88,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { axios_api } from "@/network/axios_api";
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const equityCurve = [
@@ -186,6 +187,19 @@ const SentimentBar = () => {
 // ── Main Dashboard ─────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [range, setRange] = useState("1M");
+  const [balance, setBalance] = useState(0);
+  useEffect(() => {
+    axios_api
+      .get("/ledger")
+      .then((res) => {
+        console.log(res.data);
+        setBalance(res.data.cash);
+        if (res < 0) setBalance(0);
+      })
+      .catch((err) => {
+        console.log("error at fetching funds", err);
+      });
+  }, []);
 
   return (
     <div
@@ -227,7 +241,7 @@ export default function Dashboard() {
                     className="text-4xl font-800 text-slate-900 tracking-tight leading-none"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
-                    ₹97,140.00
+                    ₹{balance}
                   </h2>
                   <span className="flex items-center gap-1 text-emerald-500 text-sm font-500 mb-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" />

@@ -34,6 +34,7 @@ import {
   setLoading,
   setLoadingFalse,
 } from "./redux/slices/authReducer";
+import { socket } from "./network/socket_api";
 
 function App() {
   const dispatch = useDispatch();
@@ -59,7 +60,24 @@ function App() {
       }
     };
 
+    socket.on("connect", () => {
+      console.log("Connected to server", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from server", socket.id);
+    });
+    socket.on("order_status_update", (data) => {
+      console.log("order status update", data);
+    });
+
     restoreAuth();
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("order_status_update");
+    };
   }, []);
 
   return (

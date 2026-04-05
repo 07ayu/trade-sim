@@ -50,7 +50,7 @@ export default function FundsDashboard() {
   const [balance, setBalance] = useState(0);
   useEffect(() => {
     axios_api
-      .get("/ledger/u1")
+      .get("/ledger")
       .then((res) => {
         console.log(res.data);
         setBalance(res.data.cash);

@@ -156,58 +156,58 @@ import { Button } from "@/components/ui/button";
 import { axios_api } from "@/network/axios_api";
 
 // ── Mock data ──────────────────────────────────────────────────────────────
-const mockOrders = [
-  {
-    id: 1,
-    userId: "u1",
-    symbol: "RELIANCE",
-    side: "BUY",
-    quantity: 10,
-    remainingQuantity: 0,
-    price: 2561.3,
-    status: "FILLED",
-  },
-  {
-    id: 2,
-    userId: "u1",
-    symbol: "INFY",
-    side: "SELL",
-    quantity: 25,
-    remainingQuantity: 10,
-    price: 1295.6,
-    status: "PARTIALLY_FILLED",
-  },
-  {
-    id: 3,
-    userId: "u1",
-    symbol: "TCS",
-    side: "BUY",
-    quantity: 8,
-    remainingQuantity: 8,
-    price: 3812.9,
-    status: "PENDING",
-  },
-  {
-    id: 4,
-    userId: "u1",
-    symbol: "HDFC",
-    side: "SELL",
-    quantity: 15,
-    remainingQuantity: 0,
-    price: 1587.4,
-    status: "FILLED",
-  },
-  {
-    id: 5,
-    userId: "u1",
-    symbol: "WIPRO",
-    side: "BUY",
-    quantity: 50,
-    remainingQuantity: 50,
-    price: 451.8,
-    status: "CANCELLED",
-  },
-];
+// const mockOrders = [
+//   {
+//     id: 1,
+//     userId: "u1",
+//     symbol: "RELIANCE",
+//     side: "BUY",
+//     quantity: 10,
+//     remainingQuantity: 0,
+//     price: 2561.3,
+//     status: "FILLED",
+//   },
+//   {
+//     id: 2,
+//     userId: "u1",
+//     symbol: "INFY",
+//     side: "SELL",
+//     quantity: 25,
+//     remainingQuantity: 10,
+//     price: 1295.6,
+//     status: "PARTIALLY_FILLED",
+//   },
+//   {
+//     id: 3,
+//     userId: "u1",
+//     symbol: "TCS",
+//     side: "BUY",
+//     quantity: 8,
+//     remainingQuantity: 8,
+//     price: 3812.9,
+//     status: "PENDING",
+//   },
+//   {
+//     id: 4,
+//     userId: "u1",
+//     symbol: "HDFC",
+//     side: "SELL",
+//     quantity: 15,
+//     remainingQuantity: 0,
+//     price: 1587.4,
+//     status: "FILLED",
+//   },
+//   {
+//     id: 5,
+//     userId: "u1",
+//     symbol: "WIPRO",
+//     side: "BUY",
+//     quantity: 50,
+//     remainingQuantity: 50,
+//     price: 451.8,
+//     status: "CANCELLED",
+//   },
+// ];
 
 const STATUS_CONFIG = {
   FILLED: {
@@ -266,18 +266,26 @@ const EmptyState = () => (
 );
 
 const Orders = () => {
-  const [allOrders, setAllOrders] = useState(mockOrders);
+  const [allOrders, setAllOrders] = useState([]); // ✅ Start with empty array
   const [filter, setFilter] = useState("ALL");
   const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
-    await axios_api
-      .get("/orders")
-      .then((res) => setAllOrders(res.data.orders));
+    setLoading(true);
+    try {
+      const res = await axios_api.get("/orders");
+      setAllOrders(res.data.orders);
+    } catch (err) {
+      console.error("Failed to fetch orders:", err);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   };
   // Swap for real API:
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(); // This will set loading to true initially
   }, []);
 
   const statuses = [
@@ -322,8 +330,7 @@ const Orders = () => {
           variant="ghost"
           size="sm"
           onClick={() => {
-            setLoading((l) => !l);
-            fetchOrders();
+            fetchOrders(); // ✅ Just call fetchOrders, don't toggle loading
           }}
           className="text-slate-400 hover:text-slate-700 hover:bg-white border border-slate-200 rounded-xl gap-1.5 text-xs"
         >

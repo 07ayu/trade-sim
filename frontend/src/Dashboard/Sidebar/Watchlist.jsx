@@ -146,7 +146,7 @@ const WatchlistItem = ({ stock }) => {
   const generalContext = useContext(GeneralContext);
 
   const HandleBuyClick = () => {
-    generalContext.openBuyWindow(stock.symbol);
+    generalContext.openBuyWindow(stock);
   };
 
   return (

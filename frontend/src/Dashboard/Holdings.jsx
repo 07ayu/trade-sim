@@ -95,6 +95,7 @@
 // export default Holdings;
 
 import React, { useState, useEffect } from "react";
+
 import {
   TrendingUp,
   TrendingDown,
@@ -111,7 +112,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { axios_api } from "@/network/axios_api";
+// import { axios_api } from "@/network/axios_api";
+import { socket } from "@/network/socket_api";
 
 // ── Mock data for preview ──────────────────────────────────────────────────
 const mockHoldings = [
@@ -178,25 +180,42 @@ const CustomTooltip = ({ active, payload }) => {
 // ── Main Component ─────────────────────────────────────────────────────────
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState(mockHoldings);
+  const [livePrices, setLivePrices] = useState({});
   const [sortKey, setSortKey] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
 
   // Replace with real API call:
-  // useEffect(() => {
-  //   axios_api
-  //     .get("/ledger/u1")
-  //     .then((res) => setAllHoldings(res.data.holdings));
-  // }, []);
+  useEffect(() => {
+    // axios_api
+    //   .get("/ledger/u1")
+    //   .then((res) => setAllHoldings(res.data.holdings));
+
+    socket.on("price_update", (symbol, price) => {
+      setLivePrices((prev) => ({
+        ...prev,
+        [symbol]: price, // update just this symbol
+      }));
+    });
+
+    return () => {
+      socket.off("price_update");
+    };
+  }, []);
 
   const totalInvestment = allHoldings.reduce((s, h) => s + h.avg * h.qty, 0);
-  const currentValue = allHoldings.reduce((s, h) => s + h.price * h.qty, 0);
+  // const currentValue = allHoldings.reduce((s, h) => s + h.price * h.qty, 0);
+  const currentValue = allHoldings.reduce((sum, stock) => {
+    const price = livePrices[stock.name] || stock.price; // fall back to mock price
+
+    return sum + price * stock.qty;
+  }, 0);
   const pnl = currentValue - totalInvestment;
   const pnlPct = ((pnl / totalInvestment) * 100).toFixed(2);
   const isOverallProfit = pnl >= 0;
 
   const chartData = allHoldings.map((h) => ({
     name: h.name,
-    value: +(h.price * h.qty).toFixed(2),
+    value: +((livePrices[h.name] || h.price) * h.qty).toFixed(2),
     profit: h.price >= h.avg,
   }));
 
@@ -316,7 +335,8 @@ const Holdings = () => {
             </thead>
             <tbody>
               {allHoldings.map((stock, i) => {
-                const curVal = stock.price * stock.qty;
+                const currentLTP = livePrices[stock.name] || stock.price;
+                const curVal = currentLTP * stock.qty;
                 const pnlVal = curVal - stock.avg * stock.qty || 0;
                 const isProfit = pnlVal >= 0 || true;
 
@@ -348,11 +368,24 @@ const Holdings = () => {
                     <td className="px-5 py-3.5 text-slate-600">
                       ₹{stock.avg.toFixed(2)}
                     </td>
-                    <td className="px-5 py-3.5 text-slate-800 font-500">
-                      ₹{stock.price.toFixed(2)}
+                    {/* <td className="px-5 py-3.5 text-slate-800 font-500">
+                      ₹{currentLTP.toFixed(2)}
+                    </td> */}
+                    {/* // ✅ Insert this */}
+                    <td
+                      className={`px-5 py-3.5 font-600 transition-colors duration-500 ${
+                        livePrices[stock.name]
+                          ? "text-blue-600 bg-blue-50/50"
+                          : "text-slate-800"
+                      }`}
+                    >
+                      ₹{(livePrices[stock.name] || stock.price).toFixed(2)}
                     </td>
                     <td className="px-5 py-3.5 text-slate-700">
-                      ₹{curVal.toFixed(2)}
+                      ₹
+                      {curVal.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
                     </td>
                     <td
                       className={`px-5 py-3.5 font-500 ${isProfit ? "text-emerald-600" : "text-rose-500"}`}
@@ -367,14 +400,14 @@ const Holdings = () => {
                       </div>
                     </td>
                     <td
-                      className={`px-5 py-3.5 font-500 ${isProfit ? "text-emerald-600" : "text-rose-500"}`}
+                      className={`px-5 py-3.5 font-500 ${pnlVal >= 0 ? "text-emerald-600" : "text-rose-500"}`}
                     >
-                      {stock.net}
+                      {((pnlVal / (stock.avg * stock.qty)) * 100).toFixed(2)}%
                     </td>
                     <td
-                      className={`px-5 py-3.5 font-500 ${stock.isLoss ? "text-rose-500" : "text-emerald-600"}`}
+                      className={`px-5 py-3.5 font-500 ${pnlVal >= 0 ? "text-rose-500" : "text-emerald-600"}`}
                     >
-                      {stock.day}
+                      {((pnlVal / (stock.avg * stock.qty)) * 100).toFixed(2)}%
                     </td>
                   </tr>
                 );
