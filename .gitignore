@@ -40,3 +40,8 @@ yarn-error.log*
 coverage/
 .nyc_output/
 node_modules
+
+
+
+tradeSimBackup/
+Server - express tradesim/

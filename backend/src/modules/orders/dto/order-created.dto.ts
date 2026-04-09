@@ -1,11 +1,10 @@
-export interface OrderCreatedEvent {
-  _id?: string;
+export class OrderCreatedDto {
   userId: string;
   symbol: string;
   side: 'BUY' | 'SELL';
   quantity: number;
   remainingQuantity: number;
   price: number;
-  status: 'PENDING' | 'PARTIALLY_FILLED' | 'FILLED' | 'CANCELLED';
+  status: 'FAILED' | 'PENDING' | 'EXECUTED' | 'PARTIALLY_FILLED';
   createdAt: Date;
 }

@@ -2,6 +2,7 @@ import { LedgerService } from './ledger.service';
 import { OrderCreatedEvent } from 'src/events/order-created.event';
 import { RedisSubscriber } from './../../infrastructure/redis/redis.subscriber';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { TradeInterface } from '../matching/interface/trade.interface';
 
 @Injectable()
 export class LedgerSubscriber implements OnModuleInit {
@@ -11,9 +12,9 @@ export class LedgerSubscriber implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.redisSubscriber.subscribe('order_created', (msg: string) => {
-      const data = JSON.parse(msg) as unknown as OrderCreatedEvent;
-      this.ledgerService.updateBalance(data);
+    await this.redisSubscriber.subscribe('trade_executed', (msg: string) => {
+      const data = JSON.parse(msg) as unknown as TradeInterface;
+      this.ledgerService.applyTrade(data);
     });
   }
 }

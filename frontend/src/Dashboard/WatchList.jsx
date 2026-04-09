@@ -80,7 +80,7 @@ const WatchlistItem = memo(({ stock }) => {
     setShowWatchListActions(false);
   };
 
-  // const socket = io("http://localhost:3000"); // your backend port
+  const socket = io("http://localhost:3000"); // your backend port
 
   return (
     <li onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>

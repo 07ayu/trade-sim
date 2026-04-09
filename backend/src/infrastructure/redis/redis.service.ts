@@ -27,14 +27,14 @@ export class RedisService implements OnModuleInit {
     });
 
     this.subscriber.on('connect', () => {
-      console.log('Subcriber connected');
+      console.log('Subscriber connected');
     });
     this.subscriber.on('error', (error) => {
       console.log('error', error);
     });
 
-    await this.publisher.connect();
-    await this.subscriber.connect();
+    this.publisher.connect();
+    this.subscriber.connect();
   }
 
   getPublisher(): RedisClient {

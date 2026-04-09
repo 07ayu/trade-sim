@@ -1,0 +1,90 @@
+import { OrderCreatedEvent } from 'src/events/order-created.event';
+import { OrderBook } from '../interface/orderbook.interface';
+import { TradeInterface } from '../interface/trade.interface';
+
+export class Match {
+  matchBuy(
+    order: OrderCreatedEvent,
+    book: OrderBook,
+    trades: TradeInterface[],
+  ) {
+    const sortedAsk = book.asks.sort((a, b) => a.price - b.price);
+
+    for (const ask of sortedAsk) {
+      if (ask.price > order.price) break;
+
+      const fillQuantity = Math.min(
+        order.remainingQuantity,
+        ask.remainingQuantity,
+      );
+
+      order.remainingQuantity -= fillQuantity;
+      ask.remainingQuantity -= fillQuantity;
+      console.log('trade executed');
+
+      trades.push({
+        symbol: order.symbol,
+        buyerUserId: order.userId,
+        sellerUserId: ask.userId,
+        buyOrderId: order._id as string,
+        sellOrderId: ask._id as string,
+        buyRemainingQuantity: order.remainingQuantity,
+        sellRemainingQuantity: ask.remainingQuantity,
+        quantity: fillQuantity,
+        price: ask.price,
+        timestamp: Date.now(),
+      });
+      // console.log('trade pushed');
+
+      if (ask.remainingQuantity === 0) {
+        ask.status = 'FILLED';
+        book.asks = book.asks.filter((a) => a !== ask);
+      } else {
+        ask.status = 'PARTIALLY_FILLED';
+      }
+
+      if (order.remainingQuantity === 0) break;
+    }
+  }
+
+  matchSell(
+    order: OrderCreatedEvent,
+    book: OrderBook,
+    trades: TradeInterface[],
+  ) {
+    const sortedBids = book.bids.sort((a, b) => b.price - a.price);
+
+    for (const bid of sortedBids) {
+      if (bid.price < order.price) break;
+
+      const fillQuantity = Math.min(
+        order.remainingQuantity,
+        bid.remainingQuantity,
+      );
+
+      order.remainingQuantity -= fillQuantity;
+      bid.remainingQuantity -= fillQuantity;
+
+      trades.push({
+        symbol: order.symbol,
+        buyerUserId: bid.userId,
+        sellerUserId: order.userId,
+        buyOrderId: bid._id as string,
+        sellOrderId: order._id as string,
+        buyRemainingQuantity: bid.remainingQuantity,
+        sellRemainingQuantity: order.remainingQuantity,
+        quantity: fillQuantity,
+        price: bid.price,
+        timestamp: Date.now(),
+      });
+      // console.log('trade pushed');
+      if (bid.remainingQuantity === 0) {
+        bid.status = 'FILLED';
+        book.bids = book.bids.filter((a) => a !== bid);
+      } else {
+        bid.status = 'PARTIALLY_FILLED';
+      }
+      if (order.remainingQuantity === 0) break;
+    }
+  }
+}

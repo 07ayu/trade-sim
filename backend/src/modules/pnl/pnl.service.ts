@@ -16,7 +16,7 @@ export class PnlService {
 
     let portfolioValue = balance.cash;
 
-    for (const [symbol, qty] of balance.holdings.entries()) {
+    for (const { name: symbol, qty } of balance.holdings) {
       const price = this.priceService.getPrice(symbol) ?? 0;
       portfolioValue += qty * price;
     }
