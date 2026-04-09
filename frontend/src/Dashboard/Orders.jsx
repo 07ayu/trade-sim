@@ -304,7 +304,7 @@ const Orders = () => {
   return (
     <div
       style={{ fontFamily: "'DM Mono', monospace" }}
-      className="p-6 space-y-5 bg-slate-50 min-h-screen"
+      className="p-6 space-y-5 bg-slate-50 dark:bg-slate-950 min-h-screen"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
@@ -318,7 +318,7 @@ const Orders = () => {
         <div>
           <h1
             style={{ fontFamily: "'Syne', sans-serif" }}
-            className="text-2xl font-800 text-slate-900 tracking-tight"
+            className="text-2xl font-800 text-slate-900 dark:text-white tracking-tight"
           >
             Orders
           </h1>
@@ -332,7 +332,7 @@ const Orders = () => {
           onClick={() => {
             fetchOrders(); // ✅ Just call fetchOrders, don't toggle loading
           }}
-          className="text-slate-400 hover:text-slate-700 hover:bg-white border border-slate-200 rounded-xl gap-1.5 text-xs"
+          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl gap-1.5 text-xs"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
@@ -358,7 +358,7 @@ const Orders = () => {
         ].map(({ label, value, color }) => (
           <div
             key={label}
-            className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4"
+            className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm px-5 py-4"
           >
             <p
               className="text-[10px] tracking-[0.13em] uppercase text-slate-400 mb-1.5"
@@ -367,7 +367,7 @@ const Orders = () => {
               {label}
             </p>
             <p
-              className={`text-2xl font-700 ${color}`}
+              className={`text-2xl font-700 ${color} dark:text-white`}
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               {value}
@@ -385,8 +385,8 @@ const Orders = () => {
             onClick={() => setFilter(s)}
             className={`text-[11px] px-3 py-1.5 rounded-full font-500 transition-all border ${
               filter === s
-                ? "bg-slate-900 text-white border-slate-900"
-                : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
+                ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100"
+                : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600"
             }`}
           >
             {s === "ALL" ? "All" : (STATUS_CONFIG[s]?.label ?? s)}
@@ -395,14 +395,14 @@ const Orders = () => {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/80">
+                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80">
                   {cols.map((c) => (
                     <th
                       key={c}
@@ -437,7 +437,7 @@ const Orders = () => {
                           <div
                             className={`w-1 h-6 rounded-full ${isBuy ? "bg-emerald-400" : "bg-rose-400"}`}
                           />
-                          <span className="text-sm font-600 text-slate-800">
+                          <span className="text-sm font-600 text-slate-800 dark:text-slate-100">
                             {order.symbol}
                           </span>
                         </div>
@@ -476,7 +476,7 @@ const Orders = () => {
                       </td>
 
                       {/* Price */}
-                      <td className="px-5 py-3.5 text-slate-800 font-500">
+                      <td className="px-5 py-3.5 text-slate-800 dark:text-slate-100 font-500">
                         ₹{order.price.toFixed(2)}
                       </td>
 
@@ -492,9 +492,9 @@ const Orders = () => {
                       {/* Fill % bar */}
                       <td className="px-5 py-3.5 min-w-[100px]">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                             <div
-                              className={`fill-bar h-full rounded-full ${fillPct === 100 ? "bg-emerald-400" : fillPct > 0 ? "bg-sky-400" : "bg-slate-300"}`}
+                              className={`fill-bar h-full rounded-full ${fillPct === 100 ? "bg-emerald-400" : fillPct > 0 ? "bg-sky-400" : "bg-slate-300 dark:bg-slate-700"}`}
                               style={{ width: `${fillPct}%` }}
                             />
                           </div>

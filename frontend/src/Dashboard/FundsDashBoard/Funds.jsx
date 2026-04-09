@@ -64,7 +64,7 @@ export default function FundsDashboard() {
   return (
     <div
       style={{ fontFamily: "'DM Mono', 'Courier New', monospace" }}
-      className="min-h-screen bg-slate-50 p-6"
+      className="min-h-screen bg-slate-50 dark:bg-slate-950 p-3 sm:p-6"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
@@ -94,10 +94,10 @@ export default function FundsDashboard() {
         .bar-fill { animation: barFill 1s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.5s; }
       `}</style>
 
-      <div className="max-w-5xl mx-auto grid grid-cols-3 gap-4">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* ── Virtual Capital Card ── */}
-        <div className="col-span-2 anim-1">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm card-hover">
+        <div className="md:col-span-2 anim-1">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-sm card-hover">
             <p
               style={{ fontFamily: "'Syne', sans-serif" }}
               className="text-[10px] font-700 tracking-[0.18em] text-slate-400 uppercase mb-2"
@@ -108,7 +108,7 @@ export default function FundsDashboard() {
               <div>
                 <p
                   style={{ fontFamily: "'Syne', sans-serif" }}
-                  className="anim-count text-5xl font-800 text-slate-900 tracking-tight leading-none"
+                  className="anim-count text-5xl font-800 text-slate-900 dark:text-white tracking-tight leading-none"
                 >
                   $
                   {balance.toLocaleString("en-US", {
@@ -116,14 +116,14 @@ export default function FundsDashboard() {
                   })}
                 </p>
                 <div className="flex items-center gap-1.5 mt-2.5">
-                  <span className="text-emerald-500 text-sm">↑</span>
-                  <span className="text-emerald-500 text-sm font-500">
+                  <span className="text-emerald-500 text-[11px] sm:text-sm">↑</span>
+                  <span className="text-emerald-500 text-[11px] sm:text-sm font-500">
                     +2.4% from last month
                   </span>
                 </div>
               </div>
-              <div className="flex gap-2.5">
-                <button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-500 px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-200">
+              <div className="flex flex-col sm:flex-row gap-2.5 mt-4 sm:mt-0">
+                <button className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-200">
                   <svg
                     width="14"
                     height="14"
@@ -137,7 +137,7 @@ export default function FundsDashboard() {
                   </svg>
                   Refill Capital
                 </button>
-                <button className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 transition-colors">
+                <button className="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
                   <svg
                     width="14"
                     height="14"
@@ -158,16 +158,16 @@ export default function FundsDashboard() {
 
         {/* ── Simulation Stats ── */}
         <div className="row-span-2 flex flex-col gap-4">
-          <div className="anim-2 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm card-hover">
+          <div className="anim-2 bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm card-hover">
             <p
               style={{ fontFamily: "'Syne', sans-serif" }}
-              className="text-sm font-700 text-slate-800 mb-4"
+              className="text-sm font-700 text-slate-800 dark:text-white mb-4"
             >
               Simulation Stats
             </p>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm">
                   <svg
                     width="16"
                     height="16"
@@ -183,7 +183,7 @@ export default function FundsDashboard() {
                 <div>
                   <p
                     style={{ fontFamily: "'Syne', sans-serif" }}
-                    className="text-sm font-600 text-slate-800"
+                    className="text-sm font-600 text-slate-800 dark:text-slate-100"
                   >
                     Total Trades
                   </p>
@@ -192,8 +192,8 @@ export default function FundsDashboard() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm">
                   <svg
                     width="16"
                     height="16"
@@ -208,7 +208,7 @@ export default function FundsDashboard() {
                 <div>
                   <p
                     style={{ fontFamily: "'Syne', sans-serif" }}
-                    className="text-sm font-600 text-slate-800"
+                    className="text-sm font-600 text-slate-800 dark:text-slate-100"
                   >
                     Win Rate
                   </p>
@@ -261,12 +261,12 @@ export default function FundsDashboard() {
         </div>
 
         {/* ── Capital Logs ── */}
-        <div className="col-span-2 anim-4">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm card-hover overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="col-span-1 md:col-span-2 anim-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm card-hover overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
               <p
                 style={{ fontFamily: "'Syne', sans-serif" }}
-                className="text-sm font-700 text-slate-800"
+                className="text-sm font-700 text-slate-800 dark:text-white"
               >
                 Capital Logs
               </p>
@@ -275,9 +275,10 @@ export default function FundsDashboard() {
               </button>
             </div>
 
-            <table className="w-full">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-slate-100 dark:border-slate-800">
                   {["Date", "Type", "Status", "Amount"].map((h) => (
                     <th
                       key={h}
@@ -293,7 +294,7 @@ export default function FundsDashboard() {
                 {capitalLogs.map((row, i) => (
                   <tr
                     key={i}
-                    className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors"
+                    className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm text-slate-500">
                       {row.date}
@@ -305,7 +306,7 @@ export default function FundsDashboard() {
                         >
                           {row.icon}
                         </span>
-                        <span className="text-sm text-slate-700 font-400">
+                        <span className="text-sm text-slate-700 dark:text-slate-200 font-400">
                           {row.type}
                         </span>
                       </div>
@@ -325,7 +326,8 @@ export default function FundsDashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         </div>
       </div>

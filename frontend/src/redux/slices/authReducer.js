@@ -35,7 +35,9 @@ export const AuthSlice = createSlice({
         },
         setError: (state, action) => {
             state.loading = false
-            state.error = action.payload.error
+            state.error = typeof action.payload === 'string'
+                ? action.payload
+                : action.payload?.error || "An error occurred";
         },
         logout: (state) => {
             state.email = null;

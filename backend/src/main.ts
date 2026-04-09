@@ -51,19 +51,27 @@ async function bootstrap() {
   setInterval(() => {
     (async () => {
       //pick a random symbol
-      const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+      // const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+      const count = Math.floor(Math.random() * 5) + 1; // 1 to 5 symbols
 
-      const changePercent = (Math.random() - 0.5) * 0.002;
-      currentPrices[symbol] = Number(
-        (currentPrices[symbol] * (1 + changePercent)).toFixed(2),
-      );
+      const selectedSymbols = [...symbols]
+        .sort(() => 0.5 - Math.random()) // shuffle
+        .slice(0, count);
 
-      await publisher.publish('price_update', {
-        symbol,
-        price: currentPrices[symbol],
-        // timestamp: Date.now(),
-      });
-      console.log(currentPrices[symbol]);
+      for (const symbol of selectedSymbols) {
+        const changePercent = (Math.random() - 0.5) * 0.002;
+
+        currentPrices[symbol] = Number(
+          (currentPrices[symbol] * (1 + changePercent)).toFixed(2),
+        );
+
+        await publisher.publish('price_update', {
+          symbol,
+          price: currentPrices[symbol],
+        });
+
+        console.log(symbol, currentPrices[symbol]);
+      }
     })().catch(console.error);
   }, 3000);
 }

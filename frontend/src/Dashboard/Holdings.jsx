@@ -181,19 +181,21 @@ const CustomTooltip = ({ active, payload }) => {
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState(mockHoldings);
   const [livePrices, setLivePrices] = useState({});
+  const [lastUpdated, setLastUpdated] = useState({});
+
   const [sortKey, setSortKey] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
 
   // Replace with real API call:
   useEffect(() => {
-    // axios_api
-    //   .get("/ledger/u1")
-    //   .then((res) => setAllHoldings(res.data.holdings));
-
-    socket.on("price_update", (symbol, price) => {
+    socket.on("price_update", (data) => {
       setLivePrices((prev) => ({
         ...prev,
-        [symbol]: price, // update just this symbol
+        [data.symbol]: data.price,
+      }));
+      setLastUpdated((prev) => ({
+        ...prev,
+        [data.symbol]: Date.now(),
       }));
     });
 
@@ -233,7 +235,7 @@ const Holdings = () => {
   return (
     <div
       style={{ fontFamily: "'DM Mono', monospace" }}
-      className="p-6 space-y-5 bg-slate-50 min-h-screen"
+      className="p-3 sm:p-6 space-y-5 bg-slate-50 dark:bg-slate-950 min-h-screen"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
@@ -247,7 +249,7 @@ const Holdings = () => {
         <div>
           <h1
             style={{ fontFamily: "'Syne', sans-serif" }}
-            className="text-2xl font-800 text-slate-900 tracking-tight"
+            className="text-2xl font-800 text-slate-900 dark:text-white tracking-tight"
           >
             Holdings
           </h1>
@@ -255,14 +257,14 @@ const Holdings = () => {
             {allHoldings.length} positions · Live prices
           </p>
         </div>
-        <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm">
+        <span className="flex items-center gap-1.5 text-xs text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-full shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Market Open
         </span>
       </div>
 
       {/* ── Summary Cards ── */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           {
             label: "Total Investment",
@@ -289,7 +291,7 @@ const Holdings = () => {
         ].map(({ label, value, sub, delay, accent, profit }) => (
           <div
             key={label}
-            className="summary-card bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow"
+            className="summary-card bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-shadow"
             style={{ animationDelay: delay }}
           >
             <p
@@ -298,29 +300,30 @@ const Holdings = () => {
             >
               {label}
             </p>
-            <p
-              className={`text-xl font-semibold leading-none mb-1.5 ${
-                profit === true
+            <h3
+              className={`text-2xl font-800 tracking-tight dark:text-white ${
+                accent === "emerald"
                   ? "text-emerald-600"
-                  : profit === false
+                  : accent === "rose"
                     ? "text-rose-500"
-                    : "text-slate-900"
+                    : accent === "blue"
+                      ? "text-blue-500"
+                      : "text-slate-800"
               }`}
-              style={{ fontFamily: "'Syne', sans-serif" }}
             >
               {value}
-            </p>
+            </h3>
             <p className="text-[11px] text-slate-400">{sub}</p>
           </div>
         ))}
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80">
+              <tr className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
                 {cols.map(({ key, label }) => (
                   <th
                     key={key}
@@ -340,10 +343,19 @@ const Holdings = () => {
                 const pnlVal = curVal - stock.avg * stock.qty || 0;
                 const isProfit = pnlVal >= 0 || true;
 
+                const isFlashing =
+                  Date.now() - (lastUpdated[stock.name] || 0) < 500;
+
                 return (
                   <tr
                     key={i}
-                    className="row-fade border-b border-slate-50 hover:bg-slate-50/70 transition-colors group"
+                    className={`row-fade border-b border-slate-50 dark:border-slate-800 transition-colors group ${
+                      isFlashing
+                        ? isProfit
+                          ? "bg-emerald-100/50 dark:bg-emerald-500/20"
+                          : "bg-rose-100/50 dark:bg-rose-500/20"
+                        : "hover:bg-slate-50/70 dark:hover:bg-slate-900/50"
+                    }`}
                     style={{ animationDelay: `${0.05 + i * 0.06}s` }}
                     onMouseEnter={() => setHoveredRow(i)}
                     onMouseLeave={() => setHoveredRow(null)}
@@ -355,7 +367,7 @@ const Holdings = () => {
                           className={`w-1 h-7 rounded-full ${isProfit ? "bg-emerald-400" : "bg-rose-400"}`}
                         />
                         <div>
-                          <p className="font-600 text-slate-800 text-sm">
+                          <p className="font-600 text-slate-800 dark:text-slate-100 text-sm">
                             {stock.name}
                           </p>
                           <p className="text-[10px] text-slate-400">
@@ -364,8 +376,8 @@ const Holdings = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 text-slate-600">{stock.qty}</td>
-                    <td className="px-5 py-3.5 text-slate-600">
+                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{stock.qty}</td>
+                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">
                       ₹{stock.avg.toFixed(2)}
                     </td>
                     {/* <td className="px-5 py-3.5 text-slate-800 font-500">
@@ -374,14 +386,16 @@ const Holdings = () => {
                     {/* // ✅ Insert this */}
                     <td
                       className={`px-5 py-3.5 font-600 transition-colors duration-500 ${
-                        livePrices[stock.name]
-                          ? "text-blue-600 bg-blue-50/50"
-                          : "text-slate-800"
+                        isFlashing
+                          ? isProfit
+                            ? "text-emerald-700 dark:text-emerald-400"
+                            : "text-rose-700 dark:text-rose-400"
+                          : "text-slate-800 dark:text-slate-100"
                       }`}
                     >
-                      ₹{(livePrices[stock.name] || stock.price).toFixed(2)}
+                      ₹{currentLTP.toFixed(2)}
                     </td>
-                    <td className="px-5 py-3.5 text-slate-700">
+                    <td className="px-5 py-3.5 text-slate-700 dark:text-slate-300">
                       ₹
                       {curVal.toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
@@ -418,12 +432,12 @@ const Holdings = () => {
       </div>
 
       {/* ── Chart ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
             <p
               style={{ fontFamily: "'Syne', sans-serif" }}
-              className="text-sm font-700 text-slate-800"
+              className="text-sm font-700 text-slate-800 dark:text-slate-100"
             >
               Portfolio Breakdown
             </p>

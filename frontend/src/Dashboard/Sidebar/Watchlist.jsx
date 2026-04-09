@@ -1,56 +1,5 @@
-// import { Input } from "@/components/ui/input";
-// import {
-//   Sidebar,
-//   SidebarContent,
-//   SidebarHeader,
-//   SidebarProvider,
-// } from "@/components/ui/sidebar";
-
-// import { watchlist } from "../data/data";
-// import WatchlistItem from "./WatchlistItem";
-// import { DoughnutChart } from "../DoughnutChart";
-
-// const WatchList = () => {
-//   const data = {
-//     labels: watchlist.map((stock) => stock.name),
-//     datasets: [
-//       {
-//         label: "Price",
-//         data: watchlist.map((stock) => stock.price),
-//       },
-//     ],
-//   };
-
-//   return (
-//     <Sidebar>
-//       <SidebarHeader>
-//         <Input placeholder="Search symbol..." />
-//         <p className="text-sm text-muted-foreground">
-//           {watchlist.length} instruments
-//         </p>
-//       </SidebarHeader>
-
-//       <SidebarContent>
-//         <SidebarContent>
-//           <ul className="space-y-1">
-//             {watchlist.map((stock) => (
-//               <WatchlistItem key={stock.symbol} stock={stock} />
-//             ))}
-//           </ul>
-//         </SidebarContent>
-
-//         {/*
-//         <div className="mt-6">
-//           <DoughnutChart data={data} />
-//         </div> */}
-//       </SidebarContent>
-//     </Sidebar>
-//   );
-// };
-
-// export default WatchList;
-
-import { memo, useContext, useState } from "react";
+import { memo, useContext, useState, useEffect } from "react";
+import { socket } from "../../network/socket_api";
 import { Input } from "@/components/ui/input";
 import {
   Sidebar,
@@ -149,17 +98,31 @@ const WatchlistItem = ({ stock }) => {
     generalContext.openBuyWindow(stock);
   };
 
+  const [flash, setFlash] = useState(false);
+
+  useEffect(() => {
+    if (stock.lastUpdated) {
+      setFlash(true);
+      const timer = setTimeout(() => setFlash(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [stock.price]);
+
   return (
     <TooltipProvider delayDuration={200}>
       <li
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 border ${
-          hovered
+        className={`relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-250 border ${
+          flash
             ? isUp
-              ? "bg-emerald-50/70 border-emerald-100"
-              : "bg-rose-50/70 border-rose-100"
-            : "border-transparent hover:bg-slate-50"
+              ? "bg-emerald-100/50 dark:bg-emerald-500/20 border-emerald-200 dark:border-emerald-500/30"
+              : "bg-rose-100/50 dark:bg-rose-500/20 border-rose-200 dark:border-rose-500/30"
+            : hovered
+              ? isUp
+                ? "bg-emerald-50/70 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20"
+                : "bg-rose-50/70 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20"
+              : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-900"
         }`}
       >
         {/* Left */}
@@ -169,7 +132,7 @@ const WatchlistItem = ({ stock }) => {
           />
           <div className="min-w-0">
             <p
-              className={`text-sm font-600 leading-none tracking-wide ${isUp ? "text-emerald-700" : "text-rose-600"}`}
+              className={`text-sm font-600 leading-none tracking-wide ${isUp ? "text-emerald-700 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               {stock.symbol}
@@ -186,7 +149,7 @@ const WatchlistItem = ({ stock }) => {
           <div
             className={`flex flex-col items-end transition-all duration-150 ${hovered ? "opacity-0 pointer-events-none" : "opacity-100"}`}
           >
-            <span className="text-sm font-500 text-slate-800 leading-none">
+            <span className="text-sm font-500 text-slate-800 dark:text-slate-100 leading-none">
               ₹{stock.price}
             </span>
             <span
@@ -235,7 +198,7 @@ const WatchlistItem = ({ stock }) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`h-7 w-7 rounded-lg bg-white border border-slate-200 shadow-sm text-slate-400 transition-all ${color}`}
+                    className={`h-7 w-7 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm text-slate-400 transition-all ${color}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       onClick?.();
@@ -274,52 +237,128 @@ const pulseItems = [
 // ── Main Sidebar ──────────────────────────────────────────────────────────
 const WatchList = () => {
   const [query, setQuery] = useState("");
+  const [list, setList] = useState(watchlist);
+
+  useEffect(() => {
+    socket.on("price_update", (data) => {
+      console.log("Price update received:", data);
+      setList((currentList) =>
+        currentList.map((item) => {
+          if (item.symbol === data.symbol) {
+            const isDown = data.price < item.price;
+            const change = ((data.price - item.price) / item.price) * 100;
+            const percent = (change >= 0 ? "+" : "") + change.toFixed(2) + "%";
+
+            return {
+              ...item,
+              price: data.price,
+              percent: percent,
+              isDown: isDown,
+              lastUpdated: Date.now(),
+            };
+          }
+          return item;
+        }),
+      );
+    });
+
+    return () => {
+      socket.off("price_update");
+    };
+  }, []);
+
   const [starred, setStarred] = useState(new Set());
 
-  const filtered = watchlist.filter(
+  const filtered = list.filter(
     (s) =>
       s.symbol.toLowerCase().includes(query.toLowerCase()) ||
       s.name.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const ups = watchlist.filter((s) => !s.isDown).length;
-  const downs = watchlist.filter((s) => s.isDown).length;
+  const symbols = [
+    "RELIANCE",
+    "TCS",
+    "INFY",
+    "ZOMATO",
+    "WIPRO",
+    "HDFC BANK",
+    "Symbol",
+  ];
+
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [reverse, setReverse] = useState(false);
+  const [placeHolder, setPlaceHolder] = useState("Search stocks...");
+
+  useEffect(() => {
+    if (subIndex === symbols[index].length + 1 && !reverse) {
+      setTimeout(() => {
+        setReverse(true);
+      }, 1000);
+      return;
+    }
+
+    if (subIndex === 0 && reverse) {
+      setReverse(false);
+      setIndex((prev) => (prev + 1) % symbols.length);
+      return;
+    }
+
+    const timeOut = setTimeout(
+      () => {
+        setSubIndex((prev) => prev + (reverse ? -1 : 1));
+      },
+      reverse ? 75 : 100
+    );
+
+    return () => clearTimeout(timeOut);
+  }, [subIndex, index, reverse]);
+
+  const ups = list.filter((s) => !s.isDown).length;
+  const downs = list.filter((s) => s.isDown).length;
+
+  useEffect(() => {
+    setPlaceHolder(`Search ${symbols[index].substring(0, subIndex)}`);
+  }, [subIndex, index]);
 
   return (
-    <Sidebar className="border-r border-slate-200 bg-white">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
         @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         .item-in { animation: fadeUp 0.28s ease both; }
       `}</style>
 
-      <SidebarHeader className="px-3 pt-4 pb-3 space-y-3 border-b border-slate-100">
+      <SidebarHeader className="px-3 pt-4 pb-3 space-y-3 border-b border-slate-100 dark:border-slate-800">
         {/* Title row */}
         <div className="flex items-center justify-between px-1">
           <p
-            className="text-sm font-700 text-slate-800"
+            className="text-sm font-700 text-slate-800 dark:text-slate-100"
             style={{ fontFamily: "'Syne', sans-serif" }}
           >
             Watchlist
           </p>
           <div className="flex items-center gap-1">
-            <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-1.5 py-0.5 rounded-full font-500">
+            <span className="text-[10px] bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-full font-500">
               ▲ {ups}
             </span>
-            <span className="text-[10px] bg-rose-50 text-rose-500 border border-rose-100 px-1.5 py-0.5 rounded-full font-500">
+            <span className="text-[10px] bg-rose-50 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20 px-1.5 py-0.5 rounded-full font-500">
               ▼ {downs}
             </span>
           </div>
         </div>
 
         {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+        <div className="relative group">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none transition-all duration-300 group-focus-within:scale-110 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 group-focus-within:rotate-[5deg]" />
           <Input
-            placeholder="Search symbol..."
+            placeholder={placeHolder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-8 pr-3 h-8 text-xs rounded-xl border-slate-200 bg-slate-50 focus:bg-white placeholder:text-slate-400"
+            className="pl-8 pr-3 h-8 text-xs rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-1 focus:ring-blue-500/20 transition-all"
             style={{ fontFamily: "'DM Mono', monospace" }}
           />
         </div>
@@ -329,19 +368,19 @@ const WatchList = () => {
           {pulseItems.map(({ label, val, chg, up }) => (
             <div
               key={label}
-              className={`rounded-lg px-2 py-1.5 ${up ? "bg-emerald-50/70" : "bg-rose-50/70"}`}
+              className={`rounded-lg px-2 py-1.5 ${up ? "bg-emerald-50/70 dark:bg-emerald-500/10" : "bg-rose-50/70 dark:bg-rose-500/10"}`}
             >
-              <p className="text-[9px] text-slate-400 leading-none mb-0.5 truncate">
+              <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-none mb-0.5 truncate">
                 {label}
               </p>
               <p
-                className="text-[11px] font-600 text-slate-700 leading-none"
+                className="text-[11px] font-600 text-slate-700 dark:text-slate-200 leading-none"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 {val}
               </p>
               <p
-                className={`text-[9px] font-500 mt-0.5 ${up ? "text-emerald-600" : "text-rose-500"}`}
+                className={`text-[9px] font-500 mt-0.5 ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}
               >
                 {chg}
               </p>
@@ -375,7 +414,7 @@ const WatchList = () => {
 
         {/* Footer count */}
         <div className="mt-3 px-3">
-          <p className="text-[10px] text-slate-300 text-center">
+          <p className="text-[10px] text-slate-300 dark:text-slate-600 text-center">
             {filtered.length} of {watchlist.length} instruments
           </p>
         </div>

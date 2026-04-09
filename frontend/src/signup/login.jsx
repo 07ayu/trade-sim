@@ -45,7 +45,10 @@ export default function Login() {
         navigate("/dashboard", { replace: true });
       }
     } catch (error) {
-      dispatch(setError(error.response?.data?.message));
+      dispatch(
+        setError({ error: error.response?.data?.message || "Login failed" }),
+      );
+      dispatch(setLoadingFalse());
     }
   };
 

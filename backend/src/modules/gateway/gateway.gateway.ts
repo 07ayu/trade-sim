@@ -55,9 +55,7 @@ export class GatewayGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
         //join a private room fo this user
         client.join(`user_${userId}`)
-        console.log(`user ${userId} has joined the room`)
-
-
+        console.log(`User ${userId} successfully connected and joined room user_${userId}`);
     }catch(error){
         console.log('error in connection',error);
         client.disconnect();
