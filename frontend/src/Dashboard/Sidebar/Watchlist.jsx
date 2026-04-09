@@ -1,4 +1,5 @@
 import { memo, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { socket } from "../../network/socket_api";
 import { Input } from "@/components/ui/input";
 import {
@@ -90,6 +91,7 @@ import GeneralContext from "../GeneralContext";
 // ── Watchlist Item ─────────────────────────────────────────────────────────
 const WatchlistItem = ({ stock }) => {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
   const isUp = !stock.isDown;
 
   const generalContext = useContext(GeneralContext);
@@ -185,6 +187,7 @@ const WatchlistItem = ({ stock }) => {
                 tip: "View chart",
                 color:
                   "hover:border-violet-300 hover:bg-violet-50 hover:text-violet-500",
+                onClick: () => navigate(`/dashboard/chart/${stock.symbol}`),
               },
               {
                 icon: Bell,
