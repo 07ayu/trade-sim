@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import { axios_api } from "../network/axios_api";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 // import Signup from "./Signup";
@@ -16,8 +17,8 @@ export default function Signup() {
     // console.log(data);
     // navigate("/dashboard")
     try {
-      await axios
-        .post("http://localhost:3000/signup}", {
+      await axios_api
+        .post("/auth/signup", {
           username: data.name,
           email: data.email,
           password: data.password,
@@ -49,7 +50,7 @@ export default function Signup() {
   // const handleSubmit = () => {
   //   console.log('Form submitted:', formData);
   //   alert(isLogin ? 'Login successful!' : 'Account created!');
-  //   navigate("http://localhost:3000/");
+  //   navigate("/");
   // };
 
   // const handleChange = (e) => {

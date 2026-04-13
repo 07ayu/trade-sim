@@ -7,11 +7,11 @@ export const axios_api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
     withCredentials: true
 });
-export const axios_demoServer = axios.create({
-    baseURL: "http://localhost:3002",
+// export const axios_demoServer = axios.create({
+//     baseURL: "http://localhost:3002",
 
-    withCredentials: true
-});
+//     withCredentials: true
+// });
 
 // axios_api.interceptors.response.use((response) => response,
 //     async (error) => {
