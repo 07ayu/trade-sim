@@ -39,6 +39,6 @@ yarn-error.log*
 # Test coverage
 coverage/
 .nyc_output/
-
-# Custom project folders
+node_modules
 tradeSimBackup/
+Server - express tradesim/
