@@ -8,7 +8,8 @@ type RedisClient = ReturnType<typeof createClient>;
 export class RedisService implements OnModuleInit {
   private publisher!: RedisClient;
   private subscriber!: RedisClient;
-  private readonly configService = new ConfigService();
+
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
     const baseClient = createClient({
