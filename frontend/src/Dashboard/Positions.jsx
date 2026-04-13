@@ -165,7 +165,7 @@ export default function Positions() {
   return (
     <div
       style={{ fontFamily: "'DM Mono', monospace" }}
-      className="p-6 space-y-5 bg-slate-50 min-h-screen"
+      className="p-3 sm:p-6 space-y-5 bg-slate-50 dark:bg-slate-950 min-h-screen"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
@@ -180,17 +180,17 @@ export default function Positions() {
         <div>
           <h1
             style={{ fontFamily: "'Syne', sans-serif" }}
-            className="text-2xl font-800 text-slate-900 tracking-tight"
+            className="text-xl sm:text-2xl font-800 text-slate-900 dark:text-white tracking-tight"
           >
             Positions
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
             {allPositions.length} open · intraday &amp; delivery
           </p>
         </div>
         <button
           onClick={handleRefresh}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 bg-white border border-slate-200 hover:border-slate-300 px-3 py-2 rounded-xl transition-all"
+          className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 px-3 py-2 rounded-xl transition-all"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${spinning ? "spin" : ""}`} />
           Refresh
@@ -198,7 +198,7 @@ export default function Positions() {
       </div>
 
       {/* ── Summary cards ── */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           {
             label: "Total P&L",
@@ -224,7 +224,7 @@ export default function Positions() {
         ].map(({ label, value, sub, profit, delay }) => (
           <div
             key={label}
-            className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-shadow"
             style={{ animation: `fadeUp 0.4s ease both ${delay}` }}
           >
             <p
@@ -235,7 +235,7 @@ export default function Positions() {
             </p>
             <p
               className={`text-2xl font-700 leading-none mb-1.5 ${
-                profit ? "text-emerald-600" : "text-rose-500"
+                profit ? "text-emerald-600 dark:text-emerald-500" : "text-rose-500 dark:text-rose-400"
               }`}
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
@@ -255,8 +255,8 @@ export default function Positions() {
             onClick={() => setFilter(p)}
             className={`text-[11px] font-500 px-3 py-1.5 rounded-full transition-all border ${
               filter === p
-                ? "bg-slate-900 text-white border-slate-900"
-                : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
+                ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100"
+                : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600"
             }`}
           >
             {p}
@@ -265,11 +265,11 @@ export default function Positions() {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50">
                 {[
                   "Product",
                   "Instrument",
@@ -300,7 +300,7 @@ export default function Positions() {
                 return (
                   <tr
                     key={i}
-                    className="row-in border-b border-slate-50 hover:bg-slate-50/70 transition-colors group"
+                    className="row-in border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/70 dark:hover:bg-slate-800/70 transition-colors group"
                     style={{ animationDelay: `${0.04 + i * 0.055}s` }}
                   >
                     {/* Product */}
@@ -319,7 +319,7 @@ export default function Positions() {
                           className={`w-1 h-6 rounded-full ${isLong ? "bg-emerald-400" : "bg-rose-400"}`}
                         />
                         <div>
-                          <p className="text-sm font-600 text-slate-800">
+                          <p className="text-sm font-600 text-slate-800 dark:text-slate-100">
                             {pos.name}
                           </p>
                           <p className="text-[10px] text-slate-400">
@@ -345,7 +345,7 @@ export default function Positions() {
                     </td>
 
                     {/* LTP */}
-                    <td className="px-5 py-3.5 font-500 text-slate-800">
+                    <td className="px-5 py-3.5 font-500 text-slate-800 dark:text-slate-100">
                       ₹{pos.price.toFixed(2)}
                     </td>
 
@@ -386,7 +386,7 @@ export default function Positions() {
         </div>
 
         {/* ── Table footer ── */}
-        <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
           <p className="text-[11px] text-slate-400">
             Showing {filtered.length} of {allPositions.length} positions
           </p>

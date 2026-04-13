@@ -21,6 +21,7 @@ import Orders from "./Dashboard/Orders";
 import Holdings from "./Dashboard/Holdings";
 import Positions from "./Dashboard/Positions";
 import Funds from "./Dashboard/FundsDashBoard/Funds";
+import TradingViewWidget from "./Dashboard/TradingViewWidget";
 // import Apps from "./Dashboard/Apps";
 
 import CheckAuth from "./CheckAuth";
@@ -99,6 +100,7 @@ function App() {
           <Route path="holdings" element={<Holdings />} />
           <Route path="positions" element={<Positions />} />
           <Route path="funds" element={<Funds />} />
+          <Route path="chart/:symbol" element={<TradingViewWidget />} />
           {/* <Route path="apps" element={<Apps />} /> */}
         </Route>
       </Route>

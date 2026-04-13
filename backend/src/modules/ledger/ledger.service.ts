@@ -1,5 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { OrderFilledEvent } from 'src/events/order-filled.event';
+// import { Order } from './../orders/models/order.schema';
+import { Model } from 'mongoose';
+// import { Order, OrderDocument } from './../orders/order.schema';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+// import { OrderFilledEvent } from 'src/events/order-filled.event';
+import { InjectModel } from '@nestjs/mongoose';
+import { Trade, TradeDocument } from '../matching/models/trade.schema';
+import { TradeInterface } from '../matching/interface/trade.interface';
+import { error } from 'console';
+import { Order, OrderDocument } from '../orders/models/order.schema';
 
 type balance = {
   cash: number;
@@ -7,38 +15,162 @@ type balance = {
 };
 
 @Injectable()
-export class LedgerService {
+export class LedgerService implements OnModuleInit {
+  //user balance
   private userBalance: Map<string, balance> = new Map();
 
-  updateBalance(event: OrderFilledEvent) {
-    const { userId, symbol, side, qty, price } = event;
+  //injecting model
+  constructor(
+    @InjectModel(Trade.name)
+    private readonly tradeModel: Model<TradeDocument>,
+    @InjectModel(Order.name)
+    private readonly orderModel: Model<OrderDocument>,
+  ) {}
 
+  private SeedSystemAccount() {
+    this.userBalance.set('u0', {
+      cash: 99999999,
+      holdings: new Map([
+        ['AAPL', 99999999],
+        ['TSLA', 99999999],
+      ]),
+    });
+    console.log('seed account u0 created');
+  }
+
+  //rebuilds from the ledger on startup
+  async onModuleInit() {
+    await this.rebuildFromTrade();
+  }
+
+  //apply trade changes to the ledger
+  applyTrade(trades: TradeInterface) {
+    const { buyerUserId, sellerUserId, symbol, quantity, price } = trades;
+
+    const buyer = this.getOrCreateUser(buyerUserId)!;
+    const seller = this.getOrCreateUser(sellerUserId)!;
+
+    // console.log('balance updated', balance, userId)
+
+    //buyer settlement
+    buyer.cash -= quantity * price;
+    const buyerQty = buyer.holdings.get(symbol) ?? 0;
+    buyer?.holdings.set(symbol, buyerQty + quantity);
+
+    //seller settlement
+    seller.cash += quantity * price;
+    const sellerQty = seller.holdings.get(symbol) ?? 0;
+    seller.holdings.set(symbol, sellerQty - quantity);
+  }
+
+  getOrCreateUser(userId: string) {
     //if the user has no user id then give him 10k
+
     if (!this.userBalance.has(userId)) {
       this.userBalance.set(userId, {
         cash: 10000,
         holdings: new Map(),
       });
     }
-    const balance = this.userBalance.get(userId);
+    return this.userBalance.get(userId);
+  }
 
-    if (!balance) {
-      return;
+  async rebuildFromTrade() {
+    this.userBalance.clear();
+    const trades = await this.tradeModel.find().sort({ createdAt: 1 }).lean();
+    console.log('got order details');
+    for (const t of trades) {
+      const trade: TradeInterface = {
+        buyerUserId: t.buyerUserId.toString(),
+        sellerUserId: t.sellerUserId.toString(),
+        symbol: t.symbol,
+        quantity: t.quantity,
+        price: t.price,
+        buyOrderId: '',
+        sellOrderId: '',
+        buyRemainingQuantity: 0,
+        sellRemainingQuantity: 0,
+      };
+      this.applyTrade(trade);
     }
-    const currentQty = balance.holdings.get(symbol) ?? 0;
 
-    if (side == 'BUY') {
-      balance.cash -= qty * price;
-      balance.holdings.set(symbol, currentQty + qty);
-    } else {
-      balance.cash += qty * price;
-      balance.holdings.set(symbol, currentQty - qty);
-    }
+    // for (const order of orders) {
+    //   const event: OrderFilledEvent = {
+    //     userId: order.userId.toString(),
+    //     symbol: order.symbol,
+    //     side: order.side,
+    //     quantity: order.quantity,
+    //     price: order.price,
+    //     status: order.status,
+    //   };
+    // this.updateBalance(event);
+    // console.log('ledger ReHyderated');
+    this.SeedSystemAccount();
 
-    console.log('balance updated', balance, userId);
+    // }
   }
 
   getUserBalance(userId: string) {
-    return this.userBalance.get(userId);
+    const balance = this.userBalance.get(userId);
+    if (!balance) return null;
+
+    // Convert Map to plain object for JSON serialization
+    return {
+      cash: balance.cash,
+      holdings: Array.from(balance.holdings, ([symbol, quantity]) => ({
+        name: symbol,
+        qty: quantity,
+      })),
+    };
+  }
+
+  // async updateCash(
+  //   userId: string,
+  //   amount: number,
+  //   type: 'deposit' | 'withdrawal',
+  // ) {
+  //   const user = this.getOrCreateUser(userId)!;
+
+  //   if (type === 'withdrawal' && user.cash < amount) {
+  //     throw new Error('Insufficient balance');
+  //   }
+
+  //   if (type === 'deposit') {
+  //     user.cash += amount;
+  //   } else {
+  //     user.cash -= amount;
+  //   }
+
+  //   console.log('cash updated', user.cash);
+  //   return user;
+  // }
+
+  async refillCapital(userId: string) {
+    const user = this.getOrCreateUser(userId)!;
+    const refillAmount = 10000 - user.cash;
+    user.cash += refillAmount;
+    console.log('capital refilled for user', userId);
+    return user;
+  }
+
+  async resetAccount(userId: string) {
+    const user = this.getOrCreateUser(userId)!;
+    user.cash = 10000;
+    user.holdings.clear();
+    console.log('capital refilled for user', userId);
+    return user;
+  }
+
+  async getTransactionLogs(userId: string) {
+    // const user = this.getOrCreateUser(userID)!;
+    const userTrades = await this.orderModel
+      .find({
+        userId: userId,
+        status: { $in: ['FILLED'] },
+      })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return userTrades;
   }
 }

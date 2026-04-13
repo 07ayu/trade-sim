@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createClient } from 'redis';
 
 type RedisClient = ReturnType<typeof createClient>;
@@ -8,11 +9,16 @@ export class RedisService implements OnModuleInit {
   private publisher!: RedisClient;
   private subscriber!: RedisClient;
 
+  constructor(private readonly configService: ConfigService) {}
+
   async onModuleInit() {
     const baseClient = createClient({
+      url: this.configService.get<string>('REDIS_URL'),
       socket: {
-        host: '127.0.0.1',
-        port: 6379,
+        // host: '127.0.0.1',
+        // port: 6379,
+        tls: true,
+        rejectUnauthorized: false,
       },
     });
 
@@ -27,14 +33,14 @@ export class RedisService implements OnModuleInit {
     });
 
     this.subscriber.on('connect', () => {
-      console.log('Subcriber connected');
+      console.log('Subscriber connected');
     });
     this.subscriber.on('error', (error) => {
       console.log('error', error);
     });
 
-    await this.publisher.connect();
-    await this.subscriber.connect();
+    this.publisher.connect();
+    this.subscriber.connect();
   }
 
   getPublisher(): RedisClient {

@@ -1,70 +1,4 @@
-// import React from "react";
-// import TradingViewWidget from "./TradingViewWidget";
 
-// const Summary =  () => {
-//   return (
-//     <>
-//       <TradingViewWidget />
-
-//       <div className="username">
-//         <h6>Hi, User!</h6>
-//         <hr className="divider" />
-//       </div>
-
-//       <div className="section">
-//         <span>
-//           <p>Equity</p>
-//         </span>
-
-//         <div className="data">
-//           <div className="first">
-//             <h3>3.74k</h3>
-//             <p>Margin available</p>
-//           </div>
-//           <hr />
-
-//           <div className="second">
-//             <p>
-//               Margins used <span>0</span>{" "}
-//             </p>
-//             <p>
-//               Opening balance <span>3.74k</span>{" "}
-//             </p>
-//           </div>
-//         </div>
-//         <hr className="divider" />
-//       </div>
-
-//       <div className="section">
-//         <span>
-//           <p>Holdings (13)</p>
-//         </span>
-
-//         <div className="data">
-//           <div className="first">
-//             <h3 className="profit">
-//               1.55k <small>+5.20%</small>{" "}
-//             </h3>
-//             <p>P&L</p>
-//           </div>
-//           <hr />
-
-//           <div className="second">
-//             <p>
-//               Current Value <span>31.43k</span>{" "}
-//             </p>
-//             <p>
-//               Investment <span>29.88k</span>{" "}
-//             </p>
-//           </div>
-//         </div>
-//         <hr className="divider" />
-//       </div>
-//     </>
-//   );
-// };
-
-// export default Summary;
 
 import { useEffect, useState } from "react";
 import {
@@ -176,7 +110,7 @@ const SentimentBar = () => {
         />
       </div>
       <div className="flex justify-end">
-        <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">
           Neutral-Bullish · {pos}
         </span>
       </div>
@@ -203,8 +137,8 @@ export default function Dashboard() {
 
   return (
     <div
-      style={{ fontFamily: "'DM Mono', monospace", background: "#f1f5f9" }}
-      className="min-h-screen p-5 space-y-4"
+      style={{ fontFamily: "'DM Mono', monospace" }}
+      className="min-h-screen p-3 sm:p-5 space-y-4 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
@@ -218,14 +152,16 @@ export default function Dashboard() {
         .a6{animation:fadeUp .4s ease both;animation-delay:.34s}
         .goal-bar{animation:barIn 1.1s cubic-bezier(.16,1,.3,1) both;animation-delay:.6s}
         .card{background:white;border-radius:20px;border:1px solid rgba(226,232,240,.8);box-shadow:0 1px 6px rgba(0,0,0,.04)}
+        .dark .card{background:#0f172a;border-color:rgba(30,41,59,.8);box-shadow:0 1px 6px rgba(0,0,0,.2)}
         .hover-lift{transition:box-shadow .2s,transform .2s}
         .hover-lift:hover{box-shadow:0 8px 28px rgba(0,0,0,.08);transform:translateY(-1px)}
+        .dark .hover-lift:hover{box-shadow:0 8px 28px rgba(0,0,0,.3)}
       `}</style>
 
       {/* ══ LAYOUT GRID ══ */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* ── LEFT COL (2/3) ── */}
-        <div className="col-span-2 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* ── LEFT COL (2/3 on LG+) ── */}
+        <div className="lg:col-span-2 space-y-4">
           {/* Balance Card */}
           <div className="a1 card hover-lift p-5">
             <p
@@ -234,16 +170,16 @@ export default function Dashboard() {
             >
               Virtual Available Balance
             </p>
-            <div className="flex items-end justify-between flex-wrap gap-4">
+              <div className="flex items-start sm:items-end justify-between flex-col sm:flex-row gap-4">
               <div>
                 <div className="flex items-end gap-3">
                   <h2
-                    className="text-4xl font-800 text-slate-900 tracking-tight leading-none"
+                    className="text-4xl font-800 text-slate-900 dark:text-white tracking-tight leading-none"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     ₹{balance}
                   </h2>
-                  <span className="flex items-center gap-1 text-emerald-500 text-sm font-500 mb-0.5">
+                  <span className="flex items-center gap-1 text-emerald-500 text-[11px] sm:text-sm font-500 mb-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                     +2.5% Today
                   </span>
@@ -257,7 +193,7 @@ export default function Dashboard() {
                       <p className="text-[10px] tracking-[.12em] uppercase text-slate-400">
                         {l}
                       </p>
-                      <p className="text-sm font-500 text-slate-700 mt-0.5">
+                      <p className="text-sm font-500 text-slate-700 dark:text-slate-200 mt-0.5">
                         {v}
                       </p>
                     </div>
@@ -268,7 +204,7 @@ export default function Dashboard() {
                 <button className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-500 px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-100">
                   <Plus className="w-4 h-4" /> Add Funds
                 </button>
-                <button className="flex items-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 transition-colors">
+                <button className="flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
                   <ArrowDownLeft className="w-4 h-4" /> Withdraw
                 </button>
               </div>
@@ -279,7 +215,7 @@ export default function Dashboard() {
           <div className="a2 card hover-lift p-5">
             <div className="flex items-center justify-between mb-4">
               <p
-                className="text-sm font-700 text-slate-800"
+                className="text-sm font-700 text-slate-800 dark:text-slate-100"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 Portfolio Equity Curve
@@ -292,7 +228,7 @@ export default function Dashboard() {
                     className={`text-[11px] font-500 px-2.5 py-1 rounded-lg transition-all ${
                       range === r
                         ? "bg-blue-500 text-white shadow-sm"
-                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                     }`}
                   >
                     {r}
@@ -343,7 +279,7 @@ export default function Dashboard() {
                     Portfolio Value
                   </p>
                   <p
-                    className="text-base font-700 text-slate-800 mt-0.5"
+                    className="text-base font-700 text-slate-800 dark:text-slate-100 mt-0.5"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     ₹1,24,500.00
@@ -378,22 +314,22 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4 text-slate-400" />
                 <p
-                  className="text-sm font-700 text-slate-800"
+                  className="text-sm font-700 text-slate-800 dark:text-slate-100"
                   style={{ fontFamily: "'Syne', sans-serif" }}
                 >
                   Recent Activity
                 </p>
               </div>
               <Link
-                className="text-xs text-blue-500 hover:text-blue-600 font-500 flex items-center gap-0.5 transition-colors"
+                className="text-[10px] sm:text-xs text-blue-500 hover:text-blue-600 font-500 flex items-center gap-0.5 transition-colors"
                 to={"/dashboard/orders"}
               >
-                View All Orders <ChevronRight className="w-3.5 h-3.5" />
+                View All <span className="hidden sm:inline">Orders</span> <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-100">
+                <tr className="bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800">
                   {["Time", "Type", "Instrument", "Qty", "Price", "Status"].map(
                     (h) => (
                       <th
@@ -411,7 +347,7 @@ export default function Dashboard() {
                 {ACTIVITY.map((r, i) => (
                   <tr
                     key={i}
-                    className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors"
+                    className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors"
                   >
                     <td className="px-5 py-3 text-slate-400">{r.time}</td>
                     <td className="px-5 py-3">
@@ -425,11 +361,11 @@ export default function Dashboard() {
                         {r.type}
                       </span>
                     </td>
-                    <td className="px-5 py-3 font-500 text-slate-700">
+                    <td className="px-5 py-3 font-500 text-slate-700 dark:text-slate-200">
                       {r.instrument}
                     </td>
-                    <td className="px-5 py-3 text-slate-600">{r.qty}</td>
-                    <td className="px-5 py-3 text-slate-700">₹{r.price}</td>
+                    <td className="px-5 py-3 text-slate-600 dark:text-slate-400">{r.qty}</td>
+                    <td className="px-5 py-3 text-slate-700 dark:text-slate-200">₹{r.price}</td>
                     <td className="px-5 py-3">
                       <span
                         className={`text-[10px] font-500 px-2.5 py-1 rounded-full ${
@@ -453,7 +389,7 @@ export default function Dashboard() {
           {/* Sector Allocation */}
           <div className="a4 card hover-lift p-5">
             <p
-              className="text-sm font-700 text-slate-800 mb-4"
+              className="text-sm font-700 text-slate-800 dark:text-slate-100 mb-4"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               Sector Allocation
@@ -481,7 +417,7 @@ export default function Dashboard() {
                     Total
                   </p>
                   <p
-                    className="text-base font-700 text-slate-800"
+                    className="text-base font-700 text-slate-800 dark:text-white"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     ₹1.2L
@@ -497,7 +433,7 @@ export default function Dashboard() {
                       className="w-2 h-2 rounded-full"
                       style={{ background: s.color }}
                     />
-                    <span className="text-xs text-slate-600">{s.name}</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-300">{s.name}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">
@@ -506,7 +442,7 @@ export default function Dashboard() {
                         style={{ width: `${s.pct}%`, background: s.color }}
                       />
                     </div>
-                    <span className="text-xs font-500 text-slate-500 w-7 text-right">
+                    <span className="text-xs font-500 text-slate-500 dark:text-slate-400 w-7 text-right">
                       {s.pct}%
                     </span>
                   </div>
@@ -520,14 +456,14 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-slate-400" />
               <p
-                className="text-sm font-700 text-slate-800"
+                className="text-sm font-700 text-slate-800 dark:text-slate-100"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 Market Sentiment
               </p>
             </div>
             <SentimentBar />
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
               <p className="text-[11px] text-slate-500 leading-relaxed italic">
                 "Markets showing strong support at 24,400. Consolidation
                 expected before next move."

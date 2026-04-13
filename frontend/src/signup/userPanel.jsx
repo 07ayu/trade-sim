@@ -175,8 +175,8 @@ export default function LogoutPanel() {
         onClick={() => setIsOpen((o) => !o)}
         className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border transition-all duration-150 ${
           isOpen
-            ? "bg-slate-100 border-slate-300"
-            : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+            ? "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+            : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
         }`}
       >
         {/* Avatar */}
@@ -186,7 +186,7 @@ export default function LogoutPanel() {
         >
           {initials}
         </div>
-        <span className="text-xs font-500 text-slate-700 hidden sm:block max-w-20 truncate">
+        <span className="text-xs font-500 text-slate-700 dark:text-slate-300 hidden sm:block max-w-20 truncate">
           {user ?? "User"}
         </span>
         <ChevronDown
@@ -196,7 +196,7 @@ export default function LogoutPanel() {
 
       {/* ── Dropdown panel ── */}
       {isOpen && (
-        <div className="panel-pop absolute right-0 mt-2 w-72 bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/60 z-50 overflow-hidden">
+        <div className="panel-pop absolute right-0 mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xl shadow-slate-200/60 dark:shadow-black/50 z-50 overflow-hidden">
           {/* Header */}
           <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
             {/* decorative */}
@@ -258,26 +258,26 @@ export default function LogoutPanel() {
             {menuItems.map(({ icon: Icon, label, sub }) => (
               <button
                 key={label}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-50 transition-colors group"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
               >
-                <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-white border border-transparent group-hover:border-slate-200 flex items-center justify-center transition-all flex-shrink-0">
-                  <Icon className="w-3.5 h-3.5 text-slate-500" />
+                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-white dark:group-hover:bg-slate-700 border border-transparent group-hover:border-slate-200 dark:group-hover:border-slate-600 flex items-center justify-center transition-all flex-shrink-0">
+                  <Icon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 </div>
                 <div>
-                  <p className="text-xs font-500 text-slate-700 leading-none">
+                  <p className="text-xs font-500 text-slate-700 dark:text-slate-200 leading-none">
                     {label}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{sub}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{sub}</p>
                 </div>
               </button>
             ))}
           </div>
 
           {/* Logout */}
-          <div className="p-2 border-t border-slate-100">
+          <div className="p-2 border-t border-slate-100 dark:border-slate-800">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-rose-50 transition-colors group"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors group"
             >
               <div className="w-7 h-7 rounded-lg bg-rose-50 group-hover:bg-rose-100 border border-rose-100 flex items-center justify-center transition-all flex-shrink-0">
                 <LogOut className="w-3.5 h-3.5 text-rose-500" />
