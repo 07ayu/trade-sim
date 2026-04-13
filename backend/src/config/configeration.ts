@@ -9,6 +9,7 @@ import Joi from 'joi';
       validationSchema: Joi.object({
         MONGO_URI: Joi.string().required(),
         REDIS_URL: Joi.string().required(),
+        FRONTEND_URL: Joi.string().required(),
       }),
     }),
   ],

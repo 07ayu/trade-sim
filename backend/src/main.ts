@@ -9,7 +9,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
   });
   await app.listen(process.env.PORT ?? 3000);
@@ -73,6 +73,6 @@ async function bootstrap() {
         console.log(symbol, currentPrices[symbol]);
       }
     })().catch(console.error);
-  }, 1000000);
+  }, 3000);
 }
 bootstrap().catch(console.error);
