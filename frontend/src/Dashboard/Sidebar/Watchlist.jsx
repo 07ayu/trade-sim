@@ -6,6 +6,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Search,
@@ -102,6 +103,9 @@ const WatchlistItem = ({ stock }) => {
 
   const [flash, setFlash] = useState(false);
 
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
   useEffect(() => {
     if (stock.lastUpdated) {
       setFlash(true);
@@ -109,6 +113,44 @@ const WatchlistItem = ({ stock }) => {
       return () => clearTimeout(timer);
     }
   }, [stock.price]);
+
+  if (isCollapsed) {
+    return (
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <li
+              onClick={() => navigate(`/dashboard/chart/${stock.symbol}`)}
+              className={`flex items-center justify-center h-10 w-full rounded-lg cursor-pointer transition-all border ${
+                flash
+                  ? isUp
+                    ? "bg-emerald-100/50 border-emerald-200"
+                    : "bg-rose-100/50 border-rose-200"
+                  : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-900"
+              }`}
+            >
+              <div
+                className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold ${
+                  isUp
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
+                    : "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400"
+                }`}
+              >
+                {stock.symbol.substring(0, 2)}
+              </div>
+            </li>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p className="font-semibold">{stock.symbol}</p>
+            <p className="text-xs opacity-80">{stock.name}</p>
+            <p className="text-xs mt-1">
+              ₹{stock.price} ({stock.percent})
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -311,7 +353,7 @@ const WatchList = () => {
       () => {
         setSubIndex((prev) => prev + (reverse ? -1 : 1));
       },
-      reverse ? 75 : 100
+      reverse ? 75 : 100,
     );
 
     return () => clearTimeout(timeOut);
@@ -324,6 +366,9 @@ const WatchList = () => {
     setPlaceHolder(`Search ${symbols[index].substring(0, subIndex)}`);
   }, [subIndex, index]);
 
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
   return (
     <Sidebar
       collapsible="icon"
@@ -335,61 +380,73 @@ const WatchList = () => {
         .item-in { animation: fadeUp 0.28s ease both; }
       `}</style>
 
-      <SidebarHeader className="px-3 pt-4 pb-3 space-y-3 border-b border-slate-100 dark:border-slate-800">
+      <SidebarHeader
+        className={`px-2 pt-4 pb-3 space-y-3 border-b border-slate-100 dark:border-slate-800 ${isCollapsed ? "items-center" : ""}`}
+      >
         {/* Title row */}
-        <div className="flex items-center justify-between px-1">
-          <p
-            className="text-sm font-700 text-slate-800 dark:text-slate-100"
-            style={{ fontFamily: "'Syne', sans-serif" }}
-          >
-            Watchlist
-          </p>
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-full font-500">
-              ▲ {ups}
-            </span>
-            <span className="text-[10px] bg-rose-50 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20 px-1.5 py-0.5 rounded-full font-500">
-              ▼ {downs}
-            </span>
+        {!isCollapsed && (
+          <div className="flex items-center justify-between px-1">
+            <p
+              className="text-sm font-700 text-slate-800 dark:text-slate-100"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              Watchlist
+            </p>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-full font-500">
+                ▲ {ups}
+              </span>
+              <span className="text-[10px] bg-rose-50 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20 px-1.5 py-0.5 rounded-full font-500">
+                ▼ {downs}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Search */}
-        <div className="relative group">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none transition-all duration-300 group-focus-within:scale-110 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 group-focus-within:rotate-[5deg]" />
-          <Input
-            placeholder={placeHolder}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-8 pr-3 h-8 text-xs rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-1 focus:ring-blue-500/20 transition-all"
-            style={{ fontFamily: "'DM Mono', monospace" }}
+        <div className="relative group w-full flex justify-center">
+          <Search
+            className={`absolute ${isCollapsed ? "" : "left-2.5"} top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none transition-all duration-300 group-focus-within:scale-110 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 group-focus-within:rotate-[5deg]`}
           />
+          {!isCollapsed ? (
+            <Input
+              placeholder={placeHolder}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-8 pr-3 h-8 text-xs rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-1 focus:ring-blue-500/20 transition-all"
+              style={{ fontFamily: "'DM Mono', monospace" }}
+            />
+          ) : (
+            <div className="h-8 w-8" />
+          )}
         </div>
 
         {/* Market pulse strip */}
-        <div className="grid grid-cols-3 gap-1">
-          {pulseItems.map(({ label, val, chg, up }) => (
-            <div
-              key={label}
-              className={`rounded-lg px-2 py-1.5 ${up ? "bg-emerald-50/70 dark:bg-emerald-500/10" : "bg-rose-50/70 dark:bg-rose-500/10"}`}
-            >
-              <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-none mb-0.5 truncate">
-                {label}
-              </p>
-              <p
-                className="text-[11px] font-600 text-slate-700 dark:text-slate-200 leading-none"
-                style={{ fontFamily: "'Syne', sans-serif" }}
+        {!isCollapsed && (
+          <div className="grid grid-cols-3 gap-1">
+            {pulseItems.map(({ label, val, chg, up }) => (
+              <div
+                key={label}
+                className={`rounded-lg px-2 py-1.5 ${up ? "bg-emerald-50/70 dark:bg-emerald-500/10" : "bg-rose-50/70 dark:bg-rose-500/10"}`}
               >
-                {val}
-              </p>
-              <p
-                className={`text-[9px] font-500 mt-0.5 ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}
-              >
-                {chg}
-              </p>
-            </div>
-          ))}
-        </div>
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-none mb-0.5 truncate">
+                  {label}
+                </p>
+                <p
+                  className="text-[11px] font-600 text-slate-700 dark:text-slate-200 leading-none"
+                  style={{ fontFamily: "'Syne', sans-serif" }}
+                >
+                  {val}
+                </p>
+                <p
+                  className={`text-[9px] font-500 mt-0.5 ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}
+                >
+                  {chg}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent
@@ -416,7 +473,7 @@ const WatchList = () => {
         )}
 
         {/* Footer count */}
-        <div className="mt-3 px-3">
+        <div className={`mt-3 px-3 ${isCollapsed ? "hidden" : ""}`}>
           <p className="text-[10px] text-slate-300 dark:text-slate-600 text-center">
             {filtered.length} of {watchlist.length} instruments
           </p>

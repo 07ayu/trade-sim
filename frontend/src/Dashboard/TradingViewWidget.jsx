@@ -1,72 +1,61 @@
-// TradingViewWidget.jsx
 import React, { useEffect, useRef, memo } from "react";
 import { useParams } from "react-router-dom";
+import Orderbook from "./Orderbook/Orderbook";
 
 function TradingViewWidget() {
-  const container = useRef();
   const { symbol } = useParams();
+  const containerId = `tv-chart-${symbol || "default"}`;
 
-  // Clean symbol to ensure it's in a format TradingView likes (e.g. NSE:RELIANCE)
-  // If no symbol is provided, default to NIFTY
-  const formattedSymbol = symbol ? (symbol.includes(":") ? symbol : `NSE:${symbol}`) : "NSE:NIFTY";
+  const getSymbol = () => {
+    if (!symbol) return "NSE:NIFTY";
+    if (symbol.includes(":")) return symbol;
+    return `NASDAQ:${symbol.toUpperCase()}`;
+  };
 
   useEffect(() => {
-    // Detect theme
-    const isDark = document.documentElement.classList.contains("dark");
-    const theme = isDark ? "dark" : "light";
-    const bgColor = isDark ? "#020617" : "#ffffff"; // Slate 950 for dark, white for light
-
-    const script = document.createElement("script");
-    script.src =
-      "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-    script.type = "text/javascript";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.innerHTML = JSON.stringify({
-      autosize: true,
-      symbol: formattedSymbol,
-      interval: "D",
-      timezone: "Etc/UTC",
-      theme: theme,
-      style: "1",
-      locale: "en",
-      backgroundColor: bgColor,
-      gridColor: isDark ? "rgba(30, 41, 59, 0.1)" : "rgba(46, 46, 46, 0.06)",
-      withdateranges: true,
-      hide_side_toolbar: false,
-      allow_symbol_change: true,
-      save_image: true,
-      details: true,
-      hotlist: true,
-      calendar: false,
-      show_popup_button: true,
-      popup_width: "1000",
-      popup_height: "650",
-      support_host: "https://www.tradingview.com"
-    });
-
-    const currentContainer = container.current;
-    if (currentContainer) {
-      currentContainer.innerHTML = ""; // Clear previous widget
-      currentContainer.appendChild(script);
+    // 1. Load the TradingView script if not present
+    if (!window.TradingView) {
+      const script = document.createElement("script");
+      script.id = "tradingview-widget-loading-script";
+      script.src = "https://s3.tradingview.com/tv.js";
+      script.async = true;
+      script.onload = () => createWidget();
+      document.head.appendChild(script);
+    } else {
+      createWidget();
     }
 
-    return () => {
-      if (currentContainer) {
-        currentContainer.innerHTML = "";
+    function createWidget() {
+      if (document.getElementById(containerId) && window.TradingView) {
+        new window.TradingView.widget({
+          autosize: true,
+          symbol: getSymbol(),
+          interval: "D",
+          timezone: "Etc/UTC",
+          theme: document.documentElement.classList.contains("dark")
+            ? "dark"
+            : "light",
+          style: "1",
+          locale: "en",
+          toolbar_bg: "#f1f3f6",
+          enable_publishing: false,
+          hide_side_toolbar: false,
+          allow_symbol_change: true,
+          container_id: containerId,
+        });
       }
-    };
-  }, [formattedSymbol]);
+    }
+  }, [symbol, containerId]);
 
   return (
-    <div 
-      className="a1 flex flex-col h-[calc(100vh-3.5rem)] w-full bg-slate-50 dark:bg-slate-950 p-2 sm:p-4"
-      style={{ animation: "fadeUp 0.4s ease both" }}
-    >
-      <div
-        className="tradingview-widget-container flex-1 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm"
-        ref={container}
-      />
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full bg-slate-50 dark:bg-slate-950 p-2 sm:p-4 gap-4 overflow-hidden">
+      <div className="flex-[1.8] min-h-[400px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900">
+        <div id={containerId} className="h-full w-full" />
+      </div>
+
+      <div className="flex-1 min-h-[280px]">
+        <Orderbook symbol={symbol || "NIFTY"} />
+      </div>
     </div>
   );
 }

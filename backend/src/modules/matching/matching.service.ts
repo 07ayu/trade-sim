@@ -104,6 +104,35 @@ export class MatchingService implements OnModuleInit {
       });
     }
   }
+
+getAggregatedOrderBook(symbol: string) {
+  const book = this.getOrderBook(symbol);
+
+  const aggregate = (side: OrderCreatedEvent[], isBid: boolean) => {
+    const depthMap = new Map<number, { price: number; quantity: number }>();
+    side.forEach((o) => {
+      const existing = depthMap.get(o.price);
+      if (existing) {
+        existing.quantity += o.quantity;
+      } else {
+        depthMap.set(o.price, { price: o.price, quantity: o.quantity });
+      }
+    });
+
+    const levels = Array.from(depthMap.values());
+    if (isBid) {
+      return levels.sort((a, b) => b.price - a.price).slice(0, 10);
+    } else {
+      return levels.sort((a, b) => a.price - b.price).slice(0, 10);
+    }
+  };
+
+  return {
+    bids: aggregate(book.bids, true),
+    asks: aggregate(book.asks, false),
+  };
+}
+
   // private async publishFill(buyOrder, sellOrder, quantity, price) {
   //   await this.redisPublisher.publish('order_filled', {
   //     buyerUserId: buyOrder.,

@@ -70,14 +70,23 @@
 export const watchlist = [
     {
         symbol: "AAPL",
+        name: "Apple Inc",
         price: 1555.45,
         percent: '-1.22%',
         createdAt: Date,
     },
     {
         symbol: "TSLA",
+        name: "Tesla Inc",
         price: 116.8,
         percent: '0.83%',
+        createdAt: Date,
+    },
+    {
+        symbol: "META",
+        name: "Meta Platforms Inc",
+        price: 1295.60,
+        percent: '-1.22%',
         createdAt: Date,
     },
     {

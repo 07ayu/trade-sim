@@ -9,6 +9,7 @@ import { Trade, TradeDocument } from '../models/trade.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Order, OrderDocument } from 'src/modules/orders/models/order.schema';
+import { GatewayGateway } from 'src/modules/gateway/gateway.gateway';
 
 @Injectable()
 export class MatchingSubscriber implements OnModuleInit {
@@ -20,6 +21,8 @@ export class MatchingSubscriber implements OnModuleInit {
     private orderModel: Model<OrderDocument>,
     @InjectModel(Trade.name)
     private tradeModel: Model<TradeDocument>,
+
+    private gateway: GatewayGateway,
   ) {}
 
   async onModuleInit() {
@@ -28,6 +31,11 @@ export class MatchingSubscriber implements OnModuleInit {
       async (msg: string) => {
         const order = JSON.parse(msg) as unknown as OrderCreatedEvent;
         const result = this.matchingService.addOrder(order);
+
+        this.gateway.server.emit('orderbook_update', {
+          symbol: order.symbol,
+          depth: this.matchingService.getAggregatedOrderBook(order.symbol),
+        });
 
         for (const trade of result.trades) {
           await this.tradeModel.create(trade);
