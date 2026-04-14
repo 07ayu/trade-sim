@@ -4,7 +4,7 @@ import { logout, setAuth } from "../redux/slices/authReducer";
 // import { logout } from "../redux/slices/authReducer";
 
 export const axios_api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true
 });
 // export const axios_demoServer = axios.create({

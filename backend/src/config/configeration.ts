@@ -10,6 +10,7 @@ import Joi from 'joi';
         MONGO_URI: Joi.string().required(),
         REDIS_URL: Joi.string().required(),
         FRONTEND_URL: Joi.string().required(),
+        
       }),
     }),
   ],
