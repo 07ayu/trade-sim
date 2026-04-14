@@ -68,6 +68,9 @@ function App() {
     socket.on("disconnect", () => {
       console.log("Disconnected from server", socket.id);
     });
+    socket.on("connect_error", (err) => {
+      console.log("Connect error:", err.message);
+    });
     socket.on("order_status_update", (data) => {
       console.log("order status update", data);
     });
