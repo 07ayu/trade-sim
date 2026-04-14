@@ -10,3 +10,5 @@ export const socket = io(URL, {
     withCredentials: true,
     autoConnect: true,
 })
+
+console.log(import.meta.env.VITE_API_BASE_URL)
