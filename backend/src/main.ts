@@ -14,7 +14,9 @@ async function bootstrap() {
     origin: configService.get<string>('FRONTEND_URL'),
     credentials: true,
   });
-  await app.listen(configService.get<number>('PORT') || 3000);
+  const port = configService.get<number>('PORT') || 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on: http://0.0.0.0:${port}`);
 
   //live market simulator
   const publisher = app.get(RedisPublisher);
@@ -72,7 +74,7 @@ async function bootstrap() {
           price: currentPrices[symbol],
         });
 
-        console.log(symbol, currentPrices[symbol]);
+        // console.log(symbol, currentPrices[symbol]);
       }
     })().catch(console.error);
   }, 3000);

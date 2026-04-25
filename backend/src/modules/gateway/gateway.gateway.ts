@@ -33,17 +33,22 @@ export class GatewayGateway
   }
   handleConnection(client: Socket) {
     try {
+      console.log(`Connection attempt from client: ${client.id}`);
       //get the cookie from the handshake
       const bCookie = client.handshake.headers.cookie;
       if (!bCookie) {
-        console.log('no cookie');
+        console.warn(
+          `[Gateway] No cookie found in handshake for client: ${client.id}`,
+        );
         client.disconnect();
         return;
       }
       //extract the token from the cookie
       const token = bCookie.split('user_token=')[1]?.split(';')[0];
       if (!token) {
-        console.log('no token');
+        console.warn(
+          `[Gateway] No user_token found in cookie for client: ${client.id}`,
+        );
         client.disconnect();
         return;
       }
@@ -51,15 +56,14 @@ export class GatewayGateway
       //decode the token and get the user id
       const payload = this.jwtService.verify(token);
       const userId = payload.sub;
-      console.log(userId);
 
       //join a private room fo this user
       client.join(`user_${userId}`);
       console.log(
-        `User ${userId} successfully connected and joined room user_${userId}`,
+        `[Gateway] User ${userId} successfully connected and joined room user_${userId}`,
       );
     } catch (error) {
-      console.log('error in connection', error);
+      console.error('[Gateway] Connection error:', error.message);
       client.disconnect();
     }
 

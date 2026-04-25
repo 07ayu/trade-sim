@@ -10,6 +10,8 @@ import Joi from 'joi';
         MONGO_URI: Joi.string().required(),
         REDIS_URL: Joi.string().required(),
         FRONTEND_URL: Joi.string().required(),
+        SECRET_TOKEN: Joi.string().required(),
+        PORT: Joi.number().default(3000),
         AUTH_COOKIE_NAME: Joi.string().default('user_token'),
       }),
     }),
