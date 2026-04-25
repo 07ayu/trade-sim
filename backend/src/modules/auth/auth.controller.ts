@@ -34,63 +34,83 @@ export class AuthController {
   @Post('signup')
   async signUp(
     @Body() body: { email: string; username: string; password: string },
-    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken, user, message } = await this.authService.signup(
-      body.email,
-      body.password,
-      body.username,
-    );
+    try {
+      const { accessToken, user, message } = await this.authService.signup(
+        body.email,
+        body.password,
+        body.username,
+      );
 
-    if (message === 'user already exists') {
-      res.status(409).json({
-        message: 'user already exists',
+      if (message === 'user already exists') {
+        return res.status(409).json({
+          success: false,
+          message: 'User already exists',
+        });
+      }
+
+      res.cookie('user_token', accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+
+      return res.status(201).json({
+        message: 'User created successfully',
+        success: true,
+        accessToken,
+        user: {
+          id: user?._id,
+          email: user?.email,
+          username: user?.username,
+        },
+      });
+    } catch (error) {
+      console.error('[Auth] Signup error:', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Registration failed. Please try again.',
       });
     }
-    res.cookie('user_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
-
-    res.status(201).json({
-      message: 'user created',
-      success: true,
-      accessToken,
-      user: {
-        id: user?._id,
-        email: user?.email,
-        username: user?.username,
-      },
-    });
   }
   @Post('login')
   async login(
     @Body() body: { email: string; password: string },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken, user } = await this.authService.login(
-      body.email,
-      body.password,
-    );
+    try {
+      const { accessToken, user } = await this.authService.login(
+        body.email,
+        body.password,
+      );
 
-    res.cookie('user_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
+      res.cookie('user_token', accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
 
-    res.status(201).json({
-      message: 'User Logged in successfully',
-      success: true,
-      accessToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        username: user.username,
-      },
-    });
+      return res.status(200).json({
+        message: 'Logged in successfully',
+        success: true,
+        accessToken,
+        user: {
+          id: user._id,
+          email: user.email,
+          username: user.username,
+        },
+      });
+    } catch (error) {
+      console.error('[Auth] Login error:', error.message);
+      const status = error.status || 500;
+      const message = error.status === 401 ? 'Invalid email or password' : 'Login failed. Please try again.';
+      
+      return res.status(status).json({
+        success: false,
+        message,
+      });
+    }
   }
 
   @Get('/getCookie')

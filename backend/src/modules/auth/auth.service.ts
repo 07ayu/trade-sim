@@ -31,14 +31,11 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.userModel.findOne({ email }).lean();
-    if (!user) throw new Error('user not found');
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const auth = await bcrypt.compare(password, user.password);
-    if (!auth) throw new UnauthorizedException('wrong password');
+    if (!auth) throw new UnauthorizedException('Invalid credentials');
 
-    console.log(user);
-
-    console.log(' this is the access token', this.jwtService.sign(user));
     return {
       accessToken: this.jwtService.sign({
         sub: user._id,
