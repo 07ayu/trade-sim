@@ -26,8 +26,9 @@ export default function Login() {
     if (auth === true) {
       navigate("/dashboard", { replace: true });
     }
-  });
+  }, [auth]);
 
+  const isLoading = useSelector(selectCurrentAuthLoading);
   const onSubmit = async (data) => {
     try {
       dispatch(setLoading());
@@ -42,6 +43,7 @@ export default function Login() {
       if (res.data.success) {
         console.log("inside res.success condition");
         dispatch(setAuth(res.data));
+        dispatch(setLoadingFalse());
         navigate("/dashboard", { replace: true });
       }
     } catch (error) {
@@ -149,9 +151,18 @@ export default function Login() {
 
                   <button
                     type="submit"
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md cursor-pointer"
+                    disabled={isLoading}
+                    className={`w-full py-3 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-all ${
+                      isLoading
+                        ? "bg-gray-400 cursor-not-allowed text-black"
+                        : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+                    }`}
                   >
-                    Login
+                    {isLoading && (
+                      <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    )}
+
+                    {isLoading ? "Logging in..." : "Login"}
                   </button>
                 </div>
 
