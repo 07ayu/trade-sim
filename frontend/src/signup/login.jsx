@@ -15,6 +15,8 @@ import {
   setLoadingFalse,
 } from "../redux/slices/authReducer";
 
+import { toast } from "react-toastify";
+
 export default function Login() {
   //added
   const navigate = useNavigate();
@@ -38,18 +40,22 @@ export default function Login() {
       });
       console.log(res.data);
 
-      console.log(res.data);
-      console.log("Outside res.success condition");
       if (res.data.success) {
-        console.log("inside res.success condition");
+        toast.success("Login successful!", {
+          position: "top-right",
+          theme: "colored",
+        });
         dispatch(setAuth(res.data));
         dispatch(setLoadingFalse());
         navigate("/dashboard", { replace: true });
       }
     } catch (error) {
-      dispatch(
-        setError({ error: error.response?.data?.message || "Login failed" }),
-      );
+      const errorMessage = error.response?.data?.message || "Login failed";
+      toast.error(errorMessage, {
+        position: "top-right",
+        theme: "colored",
+      });
+      dispatch(setError({ error: errorMessage }));
       dispatch(setLoadingFalse());
     }
   };

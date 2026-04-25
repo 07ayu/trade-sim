@@ -43,23 +43,60 @@ const statusStyles = {
 };
 
 export default function FundsDashboard() {
-  // const [capital] = useState(12540.0);
   const buyingPower = 10000;
   const usedPercent = 75;
 
   const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]);
+
   useEffect(() => {
     axios_api
       .get("/ledger")
       .then((res) => {
-        console.log(res.data);
-        setBalance(res.data.cash);
-        if (res < 0) setBalance(0);
+        setBalance(res.data.cash || 0);
+        setTransactions(res.data.transactions || []);
       })
       .catch((err) => {
-        console.log("error at fetching funds", err);
+        console.error("error at fetching funds", err);
       });
   }, []);
+
+  const handleRefill = () => {
+    axios_api
+      .post("/ledger/refill")
+      .then((res) => {
+        setBalance(res.data.user.cash);
+        // Refresh transactions after refill
+        axios_api
+          .get("/ledger")
+          .then((r) => setTransactions(r.data.transactions || []));
+      })
+      .catch((err) => {
+        console.error("error at refilling funds", err);
+      });
+  };
+  const handleReset = () => {
+    axios_api
+      .post("/ledger/reset")
+      .then((res) => {
+        setBalance(res.data.user.cash);
+        setTransactions([]);
+      })
+      .catch((err) => {
+        console.error("error at resetting funds", err);
+      });
+  };
+
+  const getTransactionIcon = (type, amount) => {
+    if (type === "refill" || type === "deposit") return "↙";
+    if (type === "reset") return "↺";
+    return amount > 0 ? "↙" : "↗";
+  };
+
+  const getStatusDisplay = (status) => {
+    if (status === "completed") return "Success";
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
 
   return (
     <div
@@ -116,14 +153,19 @@ export default function FundsDashboard() {
                   })}
                 </p>
                 <div className="flex items-center gap-1.5 mt-2.5">
-                  <span className="text-emerald-500 text-[11px] sm:text-sm">↑</span>
+                  <span className="text-emerald-500 text-[11px] sm:text-sm">
+                    ↑
+                  </span>
                   <span className="text-emerald-500 text-[11px] sm:text-sm font-500">
                     +2.4% from last month
                   </span>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-2.5 mt-4 sm:mt-0">
-                <button className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-200">
+                <button
+                  className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-blue-200"
+                  onClick={handleRefill}
+                >
                   <svg
                     width="14"
                     height="14"
@@ -137,7 +179,10 @@ export default function FundsDashboard() {
                   </svg>
                   Refill Capital
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                <button
+                  onClick={handleReset}
+                  className="flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] sm:text-sm font-500 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors"
+                >
                   <svg
                     width="14"
                     height="14"
@@ -277,55 +322,77 @@ export default function FundsDashboard() {
 
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800">
-                  {["Date", "Type", "Status", "Amount"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-6 py-3 text-left text-[10px] font-600 tracking-[0.12em] text-slate-400 uppercase"
-                      style={{ fontFamily: "'Syne', sans-serif" }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {capitalLogs.map((row, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-sm text-slate-500">
-                      {row.date}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-sm ${row.positive ? "text-emerald-500" : "text-rose-400"}`}
-                        >
-                          {row.icon}
-                        </span>
-                        <span className="text-sm text-slate-700 dark:text-slate-200 font-400">
-                          {row.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`text-xs font-500 px-2.5 py-1 rounded-full ${statusStyles[row.status]}`}
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800">
+                    {["Date", "Type", "Status", "Amount"].map((h) => (
+                      <th
+                        key={h}
+                        className="px-6 py-3 text-left text-[10px] font-600 tracking-[0.12em] text-slate-400 uppercase"
+                        style={{ fontFamily: "'Syne', sans-serif" }}
                       >
-                        {row.status}
-                      </span>
-                    </td>
-                    <td
-                      className={`px-6 py-4 text-sm font-500 text-right ${row.positive ? "text-emerald-500" : "text-rose-400"}`}
-                    >
-                      {row.amount}
-                    </td>
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+                <tbody>
+                  {transactions.map((row, i) => {
+                    const isPositive = row.amount > 0;
+                    const statusDisplay = getStatusDisplay(row.status);
+
+                    return (
+                      <tr
+                        key={row._id || i}
+                        className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
+                          {new Date(row.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`text-sm ${isPositive ? "text-emerald-500" : "text-rose-400"}`}
+                            >
+                              {getTransactionIcon(row.type, row.amount)}
+                            </span>
+                            <span className="text-sm text-slate-700 dark:text-slate-200 font-400 capitalize">
+                              {row.description || row.type}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`text-xs font-500 px-2.5 py-1 rounded-full ${statusStyles[statusDisplay] || statusStyles.Success}`}
+                          >
+                            {statusDisplay}
+                          </span>
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm font-500 text-right whitespace-nowrap ${isPositive ? "text-emerald-500" : "text-rose-400"}`}
+                        >
+                          {isPositive ? "+" : "-"}$
+                          {Math.abs(row.amount).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {transactions.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan="4"
+                        className="px-6 py-10 text-center text-slate-500 text-sm italic"
+                      >
+                        No transaction logs found for this account.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
           </div>

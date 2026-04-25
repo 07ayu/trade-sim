@@ -17,6 +17,12 @@ export class Trade {
 
   @Prop({ required: true })
   price: number;
+
+  @Prop({ required: true })
+  buyOrderId: string;
+
+  @Prop({ required: true })
+  sellOrderId: string;
 }
 
 export type TradeDocument = HydratedDocument<Trade>;

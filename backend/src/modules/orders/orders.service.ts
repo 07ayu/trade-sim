@@ -37,8 +37,9 @@ export class OrdersService {
     this.gateway.sendOrderUpdates(userId, {
       message: 'order created socket',
       symbol: saveOrder.symbol,
-      status: saveOrder.status
-    })
+      status: saveOrder.status,
+      _id: saveOrder._id.toString(),
+    });
     console.log('order status update sent', saveOrder);
 
     console.log('saved order with _id', saveOrder._id.toString());

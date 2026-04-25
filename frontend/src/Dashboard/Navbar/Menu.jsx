@@ -12,6 +12,7 @@ import {
   Grid3X3,
 } from "lucide-react";
 import { ThemeToggle } from "../darkMode/darkmode";
+import { useSelector } from "react-redux";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -24,12 +25,14 @@ const navItems = [
 
 const Menu = () => {
   const location = useLocation();
+  const orders = useSelector((state) => state.orders.orders) || [];
+  const orderCount = orders.filter((order) => order.status !== "FILLED").length;
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur">
       <div className="flex h-14 items-center gap-4 px-4">
         {/* Left: Sidebar trigger + Logo */}
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <SidebarTrigger className="text-slate-600 dark:text-slate-400 hover:text-white dark:hover:text-white hover:bg-emerald-500 rounded-md transition-colors" />
           <div className="flex items-center gap-2">
             <img
@@ -38,6 +41,9 @@ const Menu = () => {
               alt="TradeSim"
             />
           </div>
+        </div> */}
+        <div className="flex items-center gap-3">
+          <SidebarTrigger className="text-slate-600 dark:text-slate-400 hover:text-white dark:hover:text-white hover:bg-emerald-500 rounded-md transition-colors" />
         </div>
 
         {/* Divider */}
@@ -52,7 +58,7 @@ const Menu = () => {
                 : location.pathname.startsWith(path);
 
             return (
-              <li key={path} className="flex-shrink-0">
+              <li key={path} className="shrink-0">
                 <Link
                   to={path}
                   className={`
@@ -76,7 +82,7 @@ const Menu = () => {
                   <span className="hidden sm:inline">{label}</span>
                   {label === "Orders" && (
                     <Badge className="ml-0.5 h-4 min-w-4 px-1 text-[10px] bg-emerald-500 text-white border-0 rounded-full leading-none">
-                      3
+                      {orderCount}
                     </Badge>
                   )}
                 </Link>

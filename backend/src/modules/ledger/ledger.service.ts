@@ -8,6 +8,7 @@ import { Trade, TradeDocument } from '../matching/models/trade.schema';
 import { TradeInterface } from '../matching/interface/trade.interface';
 import { error } from 'console';
 import { Order, OrderDocument } from '../orders/models/order.schema';
+import { Transaction, TransactionDocument } from './models/transaction.schema';
 
 type balance = {
   cash: number;
@@ -25,7 +26,26 @@ export class LedgerService implements OnModuleInit {
     private readonly tradeModel: Model<TradeDocument>,
     @InjectModel(Order.name)
     private readonly orderModel: Model<OrderDocument>,
+    @InjectModel(Transaction.name)
+    private readonly transactionModel: Model<TransactionDocument>,
   ) {}
+
+  private async recordTransaction(
+    userId: string,
+    amount: number,
+    type: 'deposit' | 'withdrawal' | 'trade' | 'refill' | 'reset',
+    description: string,
+    balanceAfter: number,
+  ) {
+    await this.transactionModel.create({
+      userId,
+      amount,
+      type,
+      status: 'completed',
+      description,
+      balanceAfter,
+    });
+  }
 
   private SeedSystemAccount() {
     this.userBalance.set('u0', {
@@ -61,6 +81,22 @@ export class LedgerService implements OnModuleInit {
     seller.cash += quantity * price;
     const sellerQty = seller.holdings.get(symbol) ?? 0;
     seller.holdings.set(symbol, sellerQty - quantity);
+
+    // Record transactions
+    this.recordTransaction(
+      buyerUserId,
+      -(quantity * price),
+      'trade',
+      `Bought ${quantity} ${symbol} @ ${price}`,
+      buyer.cash,
+    );
+    this.recordTransaction(
+      sellerUserId,
+      quantity * price,
+      'trade',
+      `Sold ${quantity} ${symbol} @ ${price}`,
+      seller.cash,
+    );
   }
 
   getOrCreateUser(userId: string) {
@@ -111,7 +147,7 @@ export class LedgerService implements OnModuleInit {
   }
 
   getUserBalance(userId: string) {
-    const balance = this.userBalance.get(userId);
+    const balance = this.getOrCreateUser(userId);
     if (!balance) return null;
 
     // Convert Map to plain object for JSON serialization
@@ -149,6 +185,15 @@ export class LedgerService implements OnModuleInit {
     const user = this.getOrCreateUser(userId)!;
     const refillAmount = 10000 - user.cash;
     user.cash += refillAmount;
+    
+    await this.recordTransaction(
+      userId,
+      refillAmount,
+      'refill',
+      'Capital Refilled to 10k',
+      user.cash,
+    );
+
     console.log('capital refilled for user', userId);
     return user;
   }
@@ -157,20 +202,23 @@ export class LedgerService implements OnModuleInit {
     const user = this.getOrCreateUser(userId)!;
     user.cash = 10000;
     user.holdings.clear();
-    console.log('capital refilled for user', userId);
+
+    await this.recordTransaction(
+      userId,
+      10000,
+      'reset',
+      'Account Reset to 10k',
+      user.cash,
+    );
+
+    console.log('account reset for user', userId);
     return user;
   }
 
   async getTransactionLogs(userId: string) {
-    // const user = this.getOrCreateUser(userID)!;
-    const userTrades = await this.orderModel
-      .find({
-        userId: userId,
-        status: { $in: ['FILLED'] },
-      })
-      .sort({ createdAt: 1 })
+    return this.transactionModel
+      .find({ userId })
+      .sort({ createdAt: -1 })
       .lean();
-
-    return userTrades;
   }
 }

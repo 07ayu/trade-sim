@@ -43,10 +43,10 @@ export class AuthController {
         body.username,
       );
 
-      if (message === 'user already exists') {
+      if (message === 'email already exists' || message === 'username already exists') {
         return res.status(409).json({
           success: false,
-          message: 'User already exists',
+          message: message.charAt(0).toUpperCase() + message.slice(1),
         });
       }
 

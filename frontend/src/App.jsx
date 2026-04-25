@@ -37,6 +37,9 @@ import {
 } from "./redux/slices/authReducer";
 import { socket } from "./network/socket_api";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   const dispatch = useDispatch();
 
@@ -73,6 +76,10 @@ function App() {
     });
     socket.on("order_status_update", (data) => {
       console.log("order status update", data);
+      toast.info(`Order for ${data.symbol}: ${data.status}`, {
+        position: "bottom-right",
+        theme: "dark",
+      });
     });
 
     restoreAuth();
@@ -87,7 +94,9 @@ function App() {
   console.log(import.meta.env.VITE_API_BASE_URL);
 
   return (
-    <Routes>
+    <>
+      <ToastContainer pauseOnFocusLoss={false} />
+      <Routes>
       <Route path="/" element={<Landing_page />}>
         <Route index element={<HomePage />} />
         <Route path="signup" element={<Aigen />} />
@@ -110,6 +119,7 @@ function App() {
         </Route>
       </Route>
     </Routes>
+    </>
   );
 }
 

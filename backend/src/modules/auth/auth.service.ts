@@ -15,8 +15,11 @@ export class AuthService {
   ) {}
 
   async signup(email: string, password: string, username: string) {
-    const existingUser = await this.userModel.findOne({ email }).lean();
-    if (existingUser) return { message: 'user already exists' };
+    const existingEmail = await this.userModel.findOne({ email }).lean();
+    if (existingEmail) return { message: 'email already exists' };
+
+    const existingUsername = await this.userModel.findOne({ username }).lean();
+    if (existingUsername) return { message: 'username already exists' };
 
     const user = await this.userModel.create({ email, username, password });
     console.log(user ?? 'no user ');

@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import {
   AreaChart,
@@ -170,14 +168,14 @@ export default function Dashboard() {
             >
               Virtual Available Balance
             </p>
-              <div className="flex items-start sm:items-end justify-between flex-col sm:flex-row gap-4">
+            <div className="flex items-start sm:items-end justify-between flex-col sm:flex-row gap-4">
               <div>
                 <div className="flex items-end gap-3">
                   <h2
                     className="text-4xl font-800 text-slate-900 dark:text-white tracking-tight leading-none"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
-                    ₹{balance}
+                    ₹{balance.toFixed(2)}
                   </h2>
                   <span className="flex items-center gap-1 text-emerald-500 text-[11px] sm:text-sm font-500 mb-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -324,7 +322,8 @@ export default function Dashboard() {
                 className="text-[10px] sm:text-xs text-blue-500 hover:text-blue-600 font-500 flex items-center gap-0.5 transition-colors"
                 to={"/dashboard/orders"}
               >
-                View All <span className="hidden sm:inline">Orders</span> <ChevronRight className="w-3.5 h-3.5" />
+                View All <span className="hidden sm:inline">Orders</span>{" "}
+                <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             <table className="w-full text-xs">
@@ -364,8 +363,12 @@ export default function Dashboard() {
                     <td className="px-5 py-3 font-500 text-slate-700 dark:text-slate-200">
                       {r.instrument}
                     </td>
-                    <td className="px-5 py-3 text-slate-600 dark:text-slate-400">{r.qty}</td>
-                    <td className="px-5 py-3 text-slate-700 dark:text-slate-200">₹{r.price}</td>
+                    <td className="px-5 py-3 text-slate-600 dark:text-slate-400">
+                      {r.qty}
+                    </td>
+                    <td className="px-5 py-3 text-slate-700 dark:text-slate-200">
+                      ₹{r.price}
+                    </td>
                     <td className="px-5 py-3">
                       <span
                         className={`text-[10px] font-500 px-2.5 py-1 rounded-full ${
@@ -433,7 +436,9 @@ export default function Dashboard() {
                       className="w-2 h-2 rounded-full"
                       style={{ background: s.color }}
                     />
-                    <span className="text-xs text-slate-600 dark:text-slate-300">{s.name}</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-300">
+                      {s.name}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">

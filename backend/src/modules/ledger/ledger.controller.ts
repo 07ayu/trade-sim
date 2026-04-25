@@ -1,6 +1,6 @@
 import { AuthGuard } from '@nestjs/passport';
 import { LedgerService } from './ledger.service';
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
 @Controller('ledger')
 @UseGuards(AuthGuard('jwt'))
@@ -10,16 +10,29 @@ export class LedgerController {
   @Get('')
   async getUserLedger(@Req() req: any) {
     const userId = req.user.userId;
-    console.log('balance', this.ledgerService.getUserBalance(userId));
-    console.log('logs', await this.ledgerService.getTransactionLogs('u1'));
+    const balance = this.ledgerService.getUserBalance(userId);
+    const transactions = await this.ledgerService.getTransactionLogs(userId);
 
-    return this.ledgerService.getUserBalance(userId);
+    return { ...balance, transactions };
   }
 
-  // @Get('logs')
-  // getTradeLogs(@Req() req: any) {
-  //   const userId = req.user.userId;
-  //   console.log(this.ledgerService.getTransactionLogs(userId));
-  //   return this.ledgerService.getTransactionLogs(userId);
-  // }
+  @Post('refill')
+  async refillCapital(@Req() req: any) {
+    const userId = req.user.userId;
+    const user = await this.ledgerService.refillCapital(userId);
+    return { user };
+  }
+
+  @Post('reset')
+  async resetAccount(@Req() req: any) {
+    const userId = req.user.userId;
+    const user = await this.ledgerService.resetAccount(userId);
+    return { user };
+  }
+
+  @Get('logs')
+  async getTradeLogs(@Req() req: any) {
+    const userId = req.user.userId;
+    return this.ledgerService.getTransactionLogs(userId);
+  }
 }

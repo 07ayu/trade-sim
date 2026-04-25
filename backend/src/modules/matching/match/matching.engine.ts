@@ -7,8 +7,9 @@ export class Match {
     order: OrderCreatedEvent,
     book: OrderBook,
     trades: TradeInterface[],
-  ) {
-    const sortedAsk = book.asks.sort((a, b) => a.price - b.price);
+  ): OrderCreatedEvent[] {
+    const sortedAsk = book.asks;
+    const affectedOrders: OrderCreatedEvent[] = [];
 
     for (const ask of sortedAsk) {
       if (ask.price > order.price) break;
@@ -34,7 +35,6 @@ export class Match {
         price: ask.price,
         timestamp: Date.now(),
       });
-      // console.log('trade pushed');
 
       if (ask.remainingQuantity === 0) {
         ask.status = 'FILLED';
@@ -43,16 +43,19 @@ export class Match {
         ask.status = 'PARTIALLY_FILLED';
       }
 
+      affectedOrders.push(ask);
       if (order.remainingQuantity === 0) break;
     }
+    return affectedOrders;
   }
 
   matchSell(
     order: OrderCreatedEvent,
     book: OrderBook,
     trades: TradeInterface[],
-  ) {
-    const sortedBids = book.bids.sort((a, b) => b.price - a.price);
+  ): OrderCreatedEvent[] {
+    const sortedBids = book.bids;
+    const affectedOrders: OrderCreatedEvent[] = [];
 
     for (const bid of sortedBids) {
       if (bid.price < order.price) break;
@@ -77,14 +80,17 @@ export class Match {
         price: bid.price,
         timestamp: Date.now(),
       });
-      // console.log('trade pushed');
+
       if (bid.remainingQuantity === 0) {
         bid.status = 'FILLED';
         book.bids = book.bids.filter((a) => a !== bid);
       } else {
         bid.status = 'PARTIALLY_FILLED';
       }
+
+      affectedOrders.push(bid);
       if (order.remainingQuantity === 0) break;
     }
+    return affectedOrders;
   }
 }

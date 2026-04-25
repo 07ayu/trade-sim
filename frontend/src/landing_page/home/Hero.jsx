@@ -3,7 +3,7 @@ import { SlotNumber } from "./utility/CountUp.jsx";
 import { useAnimatedBars } from "./utility/animationBar.js";
 
 const Hero = () => {
-  const [randomNumber, setRandomNumber] = useState(0);
+  const [randomNumber, setRandomNumber] = useState(Math.random().toFixed(2));
 
   useEffect(() => {
     setInterval(() => {

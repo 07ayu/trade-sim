@@ -1,147 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import { axios_api } from "../network/axios_api";
-
-// import { Card, CardContent } from "@/components/ui/card";
-// import {
-//   Table,
-//   TableHeader,
-//   TableBody,
-//   TableRow,
-//   TableHead,
-//   TableCell,
-// } from "@/components/ui/table";
-
-// import { Badge } from "@/components/ui/badge";
-// import { Button } from "@/components/ui/button";
-
-// const Orders = () => {
-//   const [allOrders, setAllOrders] = useState([]);
-
-//   useEffect(() => {
-//     axios_api
-//       .get("/orders")
-//       .then((res) => {
-//         console.log(res.data.orders);
-//         setAllOrders(res.data.orders);
-//       })
-//       .catch((err) => {
-//         console.log("error while axios_req in order.jsx", err);
-//       });
-//   }, []);
-
-//   if (allOrders.length === 0) {
-//     return (
-//       <>
-//         <div className="flex flex-col items-center justify-center p-10">
-//           <p className="text-muted-foreground mb-4">
-//             You haven't placed any orders today
-//           </p>
-
-//           <Link to={"/"} className="btn">
-//             Get started
-//           </Link>
-//         </div>
-//       </>
-//     );
-//   }
-
-//   const getStatusColor = (status) => {
-//     switch (status) {
-//       case "FILLED":
-//         return "bg-green-200 text-green-700 ";
-//       case "PARTIALLY_FILLED":
-//         return "bg-blue-200 text-blue-700";
-//       default:
-//         return "bg-red-200 text-red-700";
-//     }
-//   };
-
-//   return (
-//     <>
-//       <div className="space-y-4">
-//         <h2 className="text-2xl font-semibold">Orders ({allOrders.length})</h2>
-
-//         <Card>
-//           <CardContent>
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead>User</TableHead>
-//                   <TableHead>Symbol</TableHead>
-//                   <TableHead>Side </TableHead>
-//                   <TableHead>Quantity</TableHead>
-//                   <TableHead>Remaining</TableHead>
-//                   <TableHead>Price</TableHead>
-//                   <TableHead>Status</TableHead>
-//                 </TableRow>
-//               </TableHeader>
-
-//               <TableBody>
-//                 {allOrders.map((order) => (
-//                   <TableRow key={order.id}>
-//                     <TableCell>{order.userId}</TableCell>
-//                     <TableCell>
-//                       <Badge className="bg-gray-200  text-black font-bold ">
-//                         {order.symbol}
-//                       </Badge>
-//                     </TableCell>
-//                     <TableCell
-//                       className={
-//                         order.side === "BUY" ? "text-green-600" : "text-red-600"
-//                       }
-//                     >
-//                       {order.side}
-//                     </TableCell>
-//                     <TableCell>{order.quantity}</TableCell>
-//                     <TableCell>{order.remainingQuantity}</TableCell>
-//                     <TableCell>{order.price}</TableCell>
-//                     <TableCell>
-//                       <Badge className={getStatusColor(order.status)}>
-//                         • {order.status}
-//                       </Badge>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-//           </CardContent>
-//         </Card>
-//       </div>
-
-//       {/* {allOrders.map((stock, index) => {
-//           return (
-//             <tr key={index} className="font-bold text-2xl">
-//               <td>{stock.userId}</td>
-//               <td className="">{stock.symbol}</td>
-//               <td>{stock.side}</td>
-//               <td>{stock.quantity}</td>
-//               <td>{stock.remainingQuantity}</td>
-//               <td>{stock.price}</td>
-//               <td
-//                 className={
-//                   stock.status === "FILLED"
-//                     ? "bg-green-300 text-green-200 text-2xl"
-//                     : stock.status === "PARTIALLY_FILLED"
-//                       ? "bg-blue-300 text-2xl"
-//                       : "bg-pink-300 text-pink-300 text-2xl"
-//                 }
-//               >
-//                 {stock.status}
-//               </td>
-//             </tr>
-//           );
-//         })} */}
-//     </>
-//   );
-// };
-
-// // const Orders = () => {
-// //   return <h1>ORDERS PAGE</h1>;
-// // };
-
-// export default Orders;
-
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -154,6 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { axios_api } from "@/network/axios_api";
+import { useDispatch, useSelector } from "react-redux";
+import { setOrders } from "@/redux/slices/orderSlice";
 
 // ── Mock data ──────────────────────────────────────────────────────────────
 // const mockOrders = [
@@ -266,6 +124,7 @@ const EmptyState = () => (
 );
 
 const Orders = () => {
+  const dispatch = useDispatch();
   const [allOrders, setAllOrders] = useState([]); // ✅ Start with empty array
   const [filter, setFilter] = useState("ALL");
   const [loading, setLoading] = useState(false);
@@ -275,6 +134,7 @@ const Orders = () => {
     try {
       const res = await axios_api.get("/orders");
       setAllOrders(res.data.orders);
+      dispatch(setOrders(res.data.orders));
     } catch (err) {
       console.error("Failed to fetch orders:", err);
     } finally {
@@ -332,7 +192,7 @@ const Orders = () => {
           onClick={() => {
             fetchOrders(); // ✅ Just call fetchOrders, don't toggle loading
           }}
-          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl gap-1.5 text-xs"
+          className="text-shadow-slate-50 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl gap-1.5 text-xs"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}

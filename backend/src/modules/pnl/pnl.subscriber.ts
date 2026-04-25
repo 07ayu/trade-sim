@@ -7,7 +7,7 @@ export class PnlSubscriber implements OnModuleInit {
 
   async onModuleInit() {
     await this.redisSubscriber.subscribe('price_update', () => {
-      console.log('price updated in pnl');
+      // console.log('price updated in pnl');
     });
   }
 }

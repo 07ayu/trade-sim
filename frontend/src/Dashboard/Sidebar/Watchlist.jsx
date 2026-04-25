@@ -286,7 +286,7 @@ const WatchList = () => {
 
   useEffect(() => {
     socket.on("price_update", (data) => {
-      console.log("Price update received:", data);
+      // console.log("Price update received:", data);
       setList((currentList) =>
         currentList.map((item) => {
           if (item.symbol === data.symbol) {

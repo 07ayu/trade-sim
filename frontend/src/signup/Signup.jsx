@@ -8,28 +8,49 @@ import { useForm } from "react-hook-form";
 // import { Done } from "@mui/icons-material";
 // import { toast } from "react-toastify";
 
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectCurrentAuthLoading,
+  setError,
+  setLoading,
+  setLoadingFalse,
+} from "@/redux/slices/authReducer";
+
 export default function Signup() {
   //added
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
+  const dispatch = useDispatch();
+
+  const isLoading = useSelector(selectCurrentAuthLoading);
 
   const onSubmit = async (data) => {
-    // console.log(data);
-    // navigate("/dashboard")
     try {
-      await axios_api
-        .post("/auth/signup", {
-          username: data.name,
-          email: data.email,
-          password: data.password,
-        })
-        .then((res) => {
-          if (res.data.success) {
-            console.log(res);
-            console.log("Done");
-          }
+      dispatch(setLoading());
+      const res = await axios_api.post("/auth/signup", {
+        username: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (res.data.success) {
+        toast.success("Account created successfully!", {
+          position: "top-right",
+          theme: "colored",
         });
+        dispatch(setAuth(res.data));
+        dispatch(setLoadingFalse());
+        navigate("/dashboard");
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.message || "Signup failed";
+      toast.error(errorMessage, {
+        position: "top-right",
+        theme: "colored",
+      });
+      dispatch(setError(errorMessage));
+      dispatch(setLoadingFalse());
       console.log(error.message);
     }
   };
@@ -170,10 +191,18 @@ export default function Signup() {
 
                   <button
                     type="submit"
-                    // onClick={isLogin ? handleLogin : handleSignup}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-sm hover:shadow-md"
+                    disabled={isLoading}
+                    className={`w-full py-3 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-all ${
+                      isLoading
+                        ? "bg-gray-400 cursor-not-allowed text-black"
+                        : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+                    }`}
                   >
-                    Create account
+                    {isLoading && (
+                      <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    )}
+
+                    {isLoading ? "Creating account..." : "Create account"}
                   </button>
                 </div>
 

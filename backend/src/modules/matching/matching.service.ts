@@ -29,14 +29,17 @@ export class MatchingService implements OnModuleInit {
 
   addOrder(order: OrderCreatedEvent): {
     trades: TradeInterface[];
-    remainingOrder?: OrderCreatedEvent;
+    takerOrder: OrderCreatedEvent;
+    makerOrders: OrderCreatedEvent[];
   } {
     const book = this.getOrderBook(order.symbol);
     const trades: TradeInterface[] = [];
+    let affectedMakerOrders: OrderCreatedEvent[] = [];
+
     if (order.side === 'BUY') {
-      this.match.matchBuy(order, book, trades);
+      affectedMakerOrders = this.match.matchBuy(order, book, trades);
     } else {
-      this.match.matchSell(order, book, trades);
+      affectedMakerOrders = this.match.matchSell(order, book, trades);
     }
 
     if (order.remainingQuantity > 0) {
@@ -50,13 +53,21 @@ export class MatchingService implements OnModuleInit {
       } else {
         book.bids.push(order);
       }
-      return { trades, remainingOrder: order };
+    } else {
+      order.status = 'FILLED';
     }
-    order.status = 'FILLED';
-    return { trades };
+
+    console.log(
+      'addOrder completed. Taker status:',
+      order.status,
+      'Maker orders affected:',
+      affectedMakerOrders.length,
+    );
+    return { trades, takerOrder: order, makerOrders: affectedMakerOrders };
   }
 
   async rebuildOrderBook() {
+    this.orderBook.clear();
     const pendingOrders = await this.orderModel
       .find({
         status: { $in: ['PENDING', 'PARTIALLY_FILLED'] },
@@ -65,6 +76,7 @@ export class MatchingService implements OnModuleInit {
 
     for (const order of pendingOrders) {
       const internalOrder: OrderCreatedEvent = {
+        _id: order._id.toString(),
         userId: order.userId.toString(),
         symbol: order.symbol,
         side: order.side,
@@ -76,9 +88,10 @@ export class MatchingService implements OnModuleInit {
       };
 
       this.addToOrderbook(internalOrder);
-      console.log('orderbook rehyderated');
     }
+    console.log('orderbook rehyderated');
   }
+
   private addToOrderbook(order: OrderCreatedEvent) {
     const book = this.getOrderBook(order.symbol);
 
@@ -105,33 +118,33 @@ export class MatchingService implements OnModuleInit {
     }
   }
 
-getAggregatedOrderBook(symbol: string) {
-  const book = this.getOrderBook(symbol);
+  getAggregatedOrderBook(symbol: string) {
+    const book = this.getOrderBook(symbol);
 
-  const aggregate = (side: OrderCreatedEvent[], isBid: boolean) => {
-    const depthMap = new Map<number, { price: number; quantity: number }>();
-    side.forEach((o) => {
-      const existing = depthMap.get(o.price);
-      if (existing) {
-        existing.quantity += o.quantity;
+    const aggregate = (side: OrderCreatedEvent[], isBid: boolean) => {
+      const depthMap = new Map<number, { price: number; quantity: number }>();
+      side.forEach((o) => {
+        const existing = depthMap.get(o.price);
+        if (existing) {
+          existing.quantity += o.quantity;
+        } else {
+          depthMap.set(o.price, { price: o.price, quantity: o.quantity });
+        }
+      });
+
+      const levels = Array.from(depthMap.values());
+      if (isBid) {
+        return levels.sort((a, b) => b.price - a.price).slice(0, 10);
       } else {
-        depthMap.set(o.price, { price: o.price, quantity: o.quantity });
+        return levels.sort((a, b) => a.price - b.price).slice(0, 10);
       }
-    });
+    };
 
-    const levels = Array.from(depthMap.values());
-    if (isBid) {
-      return levels.sort((a, b) => b.price - a.price).slice(0, 10);
-    } else {
-      return levels.sort((a, b) => a.price - b.price).slice(0, 10);
-    }
-  };
-
-  return {
-    bids: aggregate(book.bids, true),
-    asks: aggregate(book.asks, false),
-  };
-}
+    return {
+      bids: aggregate(book.bids, true),
+      asks: aggregate(book.asks, false),
+    };
+  }
 
   // private async publishFill(buyOrder, sellOrder, quantity, price) {
   //   await this.redisPublisher.publish('order_filled', {

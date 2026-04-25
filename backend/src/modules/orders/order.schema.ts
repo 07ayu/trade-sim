@@ -30,10 +30,16 @@ export class Order {
   price: number;
 
   @Prop({
-    enum: ['FAILED', 'EXECUTED'],
-    default: 'EXECUTED',
+    min: 0,
+    required: true,
   })
-  status: 'FAILED' | 'EXECUTED';
+  remainingQuantity: number;
+
+  @Prop({
+    enum: ['FAILED', 'PENDING', 'EXECUTED', 'PARTIALLY_FILLED'],
+    default: 'PENDING',
+  })
+  status: 'FAILED' | 'PENDING' | 'EXECUTED' | 'PARTIALLY_FILLED';
 
   @Prop({
     required: true,

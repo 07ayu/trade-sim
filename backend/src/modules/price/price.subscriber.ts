@@ -21,7 +21,7 @@ export class PriceSubscriber implements OnModuleInit {
 
       this.priceMap.set(symbol, price);
       this.gateway.server.emit('price_update', { symbol, price });
-      console.log('price updated', symbol, price);
+      // console.log('price updated', symbol, price);
     });
   }
 

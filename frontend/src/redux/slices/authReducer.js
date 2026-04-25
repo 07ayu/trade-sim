@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Type } from "lucide-react";
 
 // Type 
 
@@ -8,7 +7,7 @@ const initialState = {
     username: null,
 
     Authenticated: false,
-    // loading: false,
+    loading: false,
     error: null,
     status: "unauthenticated"
 

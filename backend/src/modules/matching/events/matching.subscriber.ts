@@ -42,16 +42,41 @@ export class MatchingSubscriber implements OnModuleInit {
           await this.redisPublisher.publish('trade_executed', trade);
         }
 
-        if (result.remainingOrder) {
-          // await this.redisPublisher.publish(
-          //   'order_updated',
-          //   result.remainingOrder,
-          // );
-
-          await this.orderModel.findByIdAndUpdate(result.remainingOrder._id, {
-            remainingQuantity: result.remainingOrder.remainingQuantity,
-            status: result.remainingOrder.status,
+        try {
+          // Update taker order in DB
+          console.log(
+            'updating taker order',
+            result.takerOrder._id,
+            result.takerOrder.status,
+          );
+          await this.orderModel.findByIdAndUpdate(result.takerOrder._id, {
+            remainingQuantity: result.takerOrder.remainingQuantity,
+            status: result.takerOrder.status,
           });
+          this.gateway.sendOrderUpdates(result.takerOrder.userId, {
+            message: 'order updated socket',
+            symbol: result.takerOrder.symbol,
+            status: result.takerOrder.status,
+            _id: result.takerOrder._id?.toString(),
+          });
+
+          // Update all maker orders in DB
+          console.log('updating maker orders', result.makerOrders.length);
+          for (const makerOrder of result.makerOrders) {
+            console.log('updating maker', makerOrder._id, makerOrder.status);
+            await this.orderModel.findByIdAndUpdate(makerOrder._id, {
+              remainingQuantity: makerOrder.remainingQuantity,
+              status: makerOrder.status,
+            });
+            this.gateway.sendOrderUpdates(makerOrder.userId, {
+              message: 'order updated socket',
+              symbol: makerOrder.symbol,
+              status: makerOrder.status,
+              _id: makerOrder._id?.toString(),
+            });
+          }
+        } catch (err) {
+          console.error('Error updating orders in DB:', err);
         }
       },
     );
