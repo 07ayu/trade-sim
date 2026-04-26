@@ -55,7 +55,7 @@ export class AuthController {
 
       res.cookie('user_token', accessToken, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         sameSite: 'none',
       });
 
@@ -90,7 +90,7 @@ export class AuthController {
 
       res.cookie('user_token', accessToken, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         sameSite: 'none',
       });
 
