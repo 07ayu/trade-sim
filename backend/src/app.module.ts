@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
+// import { UsersModule } from './modules/auth/models/use'
 import { PriceModule } from './modules/price/price.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { LedgerModule } from './modules/ledger/ledger.module';
@@ -20,7 +20,7 @@ import { GatewayModule } from './modules/gateway/gateway.module';
     AppConfigModule,
     DatabaseModule,
     AuthModule,
-    UsersModule,
+    // UsersModule,
     PriceModule,
     LedgerModule,
     OrdersModule,

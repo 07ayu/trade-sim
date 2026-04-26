@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../users/models/user.schema';
+import { User, UserDocument } from './models/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -43,7 +43,10 @@ export class AuthController {
         body.username,
       );
 
-      if (message === 'email already exists' || message === 'username already exists') {
+      if (
+        message === 'email already exists' ||
+        message === 'username already exists'
+      ) {
         return res.status(409).json({
           success: false,
           message: message.charAt(0).toUpperCase() + message.slice(1),
@@ -104,8 +107,11 @@ export class AuthController {
     } catch (error) {
       console.error('[Auth] Login error:', error.message);
       const status = error.status || 500;
-      const message = error.status === 401 ? 'Invalid email or password' : 'Login failed. Please try again.';
-      
+      const message =
+        error.status === 401
+          ? 'Invalid email or password'
+          : 'Login failed. Please try again.';
+
       return res.status(status).json({
         success: false,
         message,
