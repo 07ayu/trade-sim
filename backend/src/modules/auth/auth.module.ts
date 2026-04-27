@@ -7,6 +7,8 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
+import { GatewayModule } from '../gateway/gateway.module';
+
 @Module({
   imports: [
     userDatabaseModule,
@@ -18,6 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
         secret: configService.get<string>('SECRET_TOKEN'),
       }),
     }),
+    GatewayModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

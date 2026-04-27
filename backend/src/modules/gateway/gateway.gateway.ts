@@ -83,7 +83,12 @@ export class GatewayGateway
     console.log('order status updated', order);
   }
 
+  disconnectUser(userId: string) {
+    this.server.to(`user_${userId}`).disconnectSockets(true);
+    console.log(`[Gateway] Force disconnected sockets for user ${userId}`);
+  }
+
   handleDisconnect(client: Socket) {
-    console.log(`client has been disconnected ${client}`);
+    console.log(`client has been disconnected ${client.id}`);
   }
 }

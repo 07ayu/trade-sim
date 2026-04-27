@@ -1,5 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { GatewayGateway } from '../gateway/gateway.gateway';
+
 import {
   Controller,
   Body,
@@ -30,7 +32,9 @@ export class AuthController {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private gateway: GatewayGateway,
   ) {}
+
   @Post('signup')
   async signUp(
     @Body() body: { email: string; username: string; password: string },
@@ -55,7 +59,7 @@ export class AuthController {
 
       res.cookie('user_token', accessToken, {
         httpOnly: true,
-        // secure: true,
+        secure: true,
         sameSite: 'none',
       });
 
@@ -90,7 +94,7 @@ export class AuthController {
 
       res.cookie('user_token', accessToken, {
         httpOnly: true,
-        // secure: true,
+        secure: true,
         sameSite: 'none',
       });
 
@@ -127,7 +131,22 @@ export class AuthController {
   }
 
   @Post('logout')
-  logout(@Res({ passthrough: true }) res: Response) {
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    //   const token = req.cookies['user_token'];
+    //   if (token) {
+    //     try {
+    //       const payload = this.jwtService.verify(token);
+    //       const userId = payload.sub;
+    //       if (userId) {
+    //         this.gateway.disconnectUser(userId);
+    //       }
+    //     } catch (error) {
+    //       // Token might be expired or invalid, ignoring as we are logging out anyway
+    //     }
+    //   }
+
+    this.gateway.disconnectUser(req.user.userId);
+
     res.clearCookie('user_token');
 
     return { message: 'logout' };

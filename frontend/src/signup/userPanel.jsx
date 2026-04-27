@@ -102,6 +102,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout, selectCurrentUser } from "../redux/slices/authReducer";
 import { axios_api } from "../network/axios_api";
+import { socket } from "../network/socket_api";
+
 import {
   LogOut,
   Settings,
@@ -134,7 +136,12 @@ export default function LogoutPanel() {
   }, [isOpen]);
 
   const handleLogout = async () => {
-    await axios_api.post("/auth/logout");
+    try {
+      await axios_api.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+    socket.disconnect();
     dispatch(logout());
     navigate("/", { replace: true });
   };

@@ -4,6 +4,8 @@ import { replace, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import { axios_api } from "../network/axios_api";
+import { socket } from "../network/socket_api";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -47,7 +49,9 @@ export default function Login() {
         });
         dispatch(setAuth(res.data));
         dispatch(setLoadingFalse());
+        socket.connect();
         navigate("/dashboard", { replace: true });
+
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Login failed";
