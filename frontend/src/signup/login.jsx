@@ -49,8 +49,8 @@ export default function Login() {
         });
         dispatch(setAuth(res.data));
         dispatch(setLoadingFalse());
-        socket.connect();
         navigate("/dashboard", { replace: true });
+
 
       }
     } catch (error) {

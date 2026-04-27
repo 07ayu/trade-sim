@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import "./index.css";
+import { Routes, Route } from "react-router-dom";
 import Landing_page from "./landing_page/Landing_Layout";
-
 import { axios_api } from "./network/axios_api";
-
 import "./index.css";
 
 import About from "./landing_page/about/AboutPage";
@@ -22,12 +18,12 @@ import Holdings from "./Dashboard/Holdings";
 import Positions from "./Dashboard/Positions";
 import Funds from "./Dashboard/FundsDashBoard/Funds";
 import TradingViewWidget from "./Dashboard/TradingViewWidget";
-// import Apps from "./Dashboard/Apps";
 
 import CheckAuth from "./CheckAuth";
+import PublicRoute from "./PublicRoute";
 import Aigen from "./signup/Signup";
-import { useDispatch } from "react-redux";
 import Login from "./signup/login";
+import { useDispatch } from "react-redux";
 
 import {
   setAuth,
@@ -35,9 +31,8 @@ import {
   setLoading,
   setLoadingFalse,
 } from "./redux/slices/authReducer";
-import { socket } from "./network/socket_api";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
@@ -64,61 +59,44 @@ function App() {
       }
     };
 
-    socket.on("connect", () => {
-      console.log("Connected to server", socket.id);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from server", socket.id);
-    });
-    socket.on("connect_error", (err) => {
-      console.log("Connect error:", err.message);
-    });
-    socket.on("order_status_update", (data) => {
-      console.log("order status update", data);
-      toast.info(`Order for ${data.symbol}: ${data.status}`, {
-        position: "bottom-right",
-        theme: "dark",
-      });
-    });
-
     restoreAuth();
 
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("order_status_update");
-    };
   }, []);
-
-  console.log(import.meta.env.VITE_API_BASE_URL);
 
   return (
     <>
       <ToastContainer pauseOnFocusLoss={false} />
       <Routes>
-      <Route path="/" element={<Landing_page />}>
-        <Route index element={<HomePage />} />
-        <Route path="signup" element={<Aigen />} />
-        <Route path="login" element={<Login />} />
-        <Route path="about" element={<About />} />
-        <Route path="product" element={<ProductPage />} />
-        <Route path="pricing" element={<Pricing />} />
-        <Route path="support" element={<Support />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
-      <Route element={<CheckAuth />}>
-        <Route path="/dashboard" element={<Dashboard />}>
-          <Route index element={<Summary />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="holdings" element={<Holdings />} />
-          <Route path="positions" element={<Positions />} />
-          <Route path="funds" element={<Funds />} />
-          <Route path="chart/:symbol" element={<TradingViewWidget />} />
-          {/* <Route path="apps" element={<Apps />} /> */}
+        {/* Public Routes */}
+        <Route path="/" element={<Landing_page />}>
+          <Route index element={<HomePage />} />
+          
+          {/* Public Routes protected from authenticated users */}
+          <Route element={<PublicRoute />}>
+            <Route path="signup" element={<Aigen />} />
+            <Route path="login" element={<Login />} />
+          </Route>
+
+          <Route path="about" element={<About />} />
+          <Route path="product" element={<ProductPage />} />
+          <Route path="pricing" element={<Pricing />} />
+          <Route path="support" element={<Support />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
-      </Route>
-    </Routes>
+
+        
+        {/* Protected Routes for authenticated users */}
+        <Route element={<CheckAuth />}>
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<Summary />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="holdings" element={<Holdings />} />
+            <Route path="positions" element={<Positions />} />
+            <Route path="funds" element={<Funds />} />
+            <Route path="chart/:symbol" element={<TradingViewWidget />} />
+          </Route>
+        </Route>
+      </Routes>
     </>
   );
 }

@@ -141,6 +141,11 @@ export default function LogoutPanel() {
     } catch (err) {
       console.error("Logout request failed:", err);
     }
+    
+    // Reset theme to light mode on logout
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+
     socket.disconnect();
     dispatch(logout());
     navigate("/", { replace: true });

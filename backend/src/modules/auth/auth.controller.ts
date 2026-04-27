@@ -124,6 +124,7 @@ export class AuthController {
   }
 
   @Get('/getCookie')
+  @UseGuards(AuthGuard('jwt'))
   getCookie(@Req() req: Request) {
     if (!req.cookies) return { message: 'no user_token' };
 
@@ -131,6 +132,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     //   const token = req.cookies['user_token'];
     //   if (token) {
@@ -145,7 +147,19 @@ export class AuthController {
     //     }
     //   }
 
-    this.gateway.disconnectUser(req.user.userId);
+    const token = req.cookies?.user_token;
+    if (token) {
+      try {
+        const payload = this.jwtService.verify(token);
+        const userId = payload.sub;
+
+        if (userId) {
+          this.gateway.disconnectUser(userId);
+        }
+      } catch (error) {
+        console.error('[Auth] Logout error:', error.message);
+      }
+    }
 
     res.clearCookie('user_token');
 

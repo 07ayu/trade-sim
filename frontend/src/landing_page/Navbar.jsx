@@ -67,12 +67,12 @@ function Navbar() {
 
 // export default Navbar;
 
+import { useSelector } from "react-redux";
+import { selectCurrentAuthenticated } from "../redux/slices/authReducer";
+
 function NavbarTWO() {
-  // function SendtoSignUp()=> {
+  const isAuthenticated = useSelector(selectCurrentAuthenticated);
 
-  // }
-
-  // const [isLogin, setIsLogin] = useState(true);
   return (
     <>
       <nav className="bg-white border-b border-gray-200 px-6 py-4">
@@ -100,7 +100,14 @@ function NavbarTWO() {
           </Link>
 
           <div className="flex items-center gap-8">
-            <Link to={"/dashboard"}>Dashboard</Link>
+            {isAuthenticated && (
+              <Link 
+                to={"/dashboard"}
+                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
+                Dashboard
+              </Link>
+            )}
             <Link
               to={"/pricing"}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
@@ -108,13 +115,13 @@ function NavbarTWO() {
               Pricing
             </Link>
             <Link
-              to={"about"}
+              to={"/about"}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               About
             </Link>
             <Link
-              to={"product"}
+              to={"/product"}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Product
@@ -125,19 +132,22 @@ function NavbarTWO() {
             >
               Support
             </Link>
-            {/* <button 
-              onClick={() => setIsLogin(!isLogin)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-            >
-              {isLogin ? 'Sign up' : 'Sign in'}
-            </button> */}
 
-            <Link
-              to={"/login"}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-            >
-              Login
-            </Link>
+            {!isAuthenticated ? (
+              <Link
+                to={"/login"}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                Login
+              </Link>
+            ) : (
+              <Link
+                to={"/dashboard"}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors font-medium"
+              >
+                Go to Dashboard
+              </Link>
+            )}
           </div>
         </div>
       </nav>

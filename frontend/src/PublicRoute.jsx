@@ -1,15 +1,12 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
-// import { ToastContainer, toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import {
   selectCurrentAuthenticated,
   selectCurrentAuthLoading,
-  setLoadingFalse,
 } from "./redux/slices/authReducer";
-import { useDispatch, useSelector } from "react-redux";
 
-const CheckAuth = () => {
-  // const dispatch = useDispatch();
+const PublicRoute = () => {
   const loading = useSelector(selectCurrentAuthLoading);
   const auth = useSelector(selectCurrentAuthenticated);
 
@@ -21,10 +18,13 @@ const CheckAuth = () => {
     );
   }
 
-  if (auth === false) {
-    return <Navigate to="/login" replace />;
+  // If user is already authenticated, redirect them to dashboard
+  if (auth === true) {
+    return <Navigate to="/dashboard" replace />;
   }
+
+  // If not authenticated, allow access to public routes (Login/Signup)
   return <Outlet />;
 };
 
-export default CheckAuth;
+export default PublicRoute;

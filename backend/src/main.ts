@@ -34,6 +34,7 @@ async function bootstrap() {
     'BAJFIN',
     'AXISBANK',
     'ITC',
+    'META',
   ];
 
   //base price for the simulation
@@ -48,6 +49,7 @@ async function bootstrap() {
     BAJFIN: 7120.5,
     AXISBANK: 1045.2,
     ITC: 462.35,
+    META: 1295.6,
   };
   //keeping track of current price
   let currentPrices = { ...basePrices };
@@ -63,7 +65,10 @@ async function bootstrap() {
         .slice(0, count);
 
       for (const symbol of selectedSymbols) {
-        const changePercent = (Math.random() - 0.5) * 0.002;
+        const changePercent = (Math.random() - 0.5) * 1.5;
+
+
+
 
         currentPrices[symbol] = Number(
           (currentPrices[symbol] * (1 + changePercent)).toFixed(2),

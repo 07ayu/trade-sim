@@ -7,11 +7,9 @@ const initialState = {
     username: null,
 
     Authenticated: false,
-    loading: false,
+    loading: true,
     error: null,
     status: "unauthenticated"
-
-
 }
 
 export const AuthSlice = createSlice({
